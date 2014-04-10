@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>cli.command.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="doc-style.css" />
+  <script src="doc-filelist.js"></script>
+  <script>
+    var relativeDir = "", thisFile = "Users/unknow/Projects/lotaris/api-copilot/tmp/repo//cli.command.js", defaultSidebar = true;
+  </script>
+  <script src="doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+          <h1>cli.command.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1">&#182;</a>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;underscore&#39;</span><span class="p">),</span>
+    <span class="nx">merge</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;deepmerge&#39;</span><span class="p">),</span>
+    <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">),</span>
+    <span class="nx">q</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">),</span>
+    <span class="nx">yaml</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;js-yaml&#39;</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">pkg</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../package&#39;</span><span class="p">),</span>
+    <span class="nx">LOG_LEVELS</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;trace&#39;</span><span class="p">,</span> <span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span> <span class="p">],</span>
+    <span class="nx">OPTIONS</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;baseUrl&#39;</span><span class="p">,</span> <span class="s1">&#39;showTime&#39;</span><span class="p">,</span> <span class="s1">&#39;showRequest&#39;</span><span class="p">,</span> <span class="s1">&#39;showResponseBody&#39;</span><span class="p">,</span> <span class="s1">&#39;showFullUrl&#39;</span> <span class="p">],</span>
+    <span class="nx">PARAM_REGEXP</span> <span class="o">=</span> <span class="sr">/^([^=]+)=(.*)$/</span><span class="p">;</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">deps</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="nx">deps</span> <span class="o">=</span> <span class="nx">deps</span> <span class="o">||</span> <span class="p">{};</span>
+  <span class="kd">var</span> <span class="nx">commander</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">commander</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;commander&#39;</span><span class="p">),</span>
+      <span class="nx">fs</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">fs</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">);</span>
+
+  <span class="kd">function</span> <span class="nx">Command</span><span class="p">()</span> <span class="p">{</span>
+  <span class="p">}</span>
+
+  <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Command</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
+
+    <span class="nx">defaultOptions</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">log</span><span class="o">:</span> <span class="s1">&#39;info&#39;</span><span class="p">,</span>
+      <span class="nx">source</span><span class="o">:</span> <span class="s1">&#39;api&#39;</span>
+    <span class="p">},</span>
+
+    <span class="nx">parse</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">argv</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">command</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">parseCommandLineOptions</span><span class="p">(</span><span class="nx">argv</span><span class="p">),</span>
+          <span class="nx">config</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">loadConfigurationFileOptions</span><span class="p">(</span><span class="nx">command</span><span class="p">);</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>build options: command options override configuration file options override default options</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">pickOptions</span><span class="p">(</span><span class="nx">config</span><span class="p">),</span> <span class="k">this</span><span class="p">.</span><span class="nx">pickOptions</span><span class="p">(</span><span class="nx">command</span><span class="p">));</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<p>make sure log level is valid, set to info otherwise</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="nx">options</span><span class="p">.</span><span class="nx">log</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">log</span> <span class="o">&amp;&amp;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">LOG_LEVELS</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">toLowerCase</span><span class="p">())</span> <span class="o">?</span> <span class="nx">options</span><span class="p">.</span><span class="nx">log</span> <span class="o">:</span> <span class="s1">&#39;info&#39;</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<p>build custom parameters</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="kd">var</span> <span class="nx">params</span> <span class="o">=</span> <span class="nx">merge</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">params</span> <span class="o">||</span> <span class="p">{},</span> <span class="nx">command</span><span class="p">.</span><span class="nx">params</span> <span class="o">||</span> <span class="p">{});</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">params</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">options</span><span class="p">.</span><span class="nx">params</span> <span class="o">=</span> <span class="nx">params</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">options</span><span class="o">:</span> <span class="nx">options</span><span class="p">,</span>
+        <span class="nx">args</span><span class="o">:</span> <span class="nx">command</span><span class="p">.</span><span class="nx">args</span>
+      <span class="p">};</span>
+    <span class="p">},</span>
+
+    <span class="nx">parseCommandLineOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">argv</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">command</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">commander</span><span class="p">.</span><span class="nx">Command</span><span class="p">();</span>
+
+      <span class="nx">command</span>
+        <span class="p">.</span><span class="nx">version</span><span class="p">(</span><span class="nx">pkg</span><span class="p">.</span><span class="nx">version</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-c, --config [file]&#39;</span><span class="p">,</span> <span class="s1">&#39;Set the configuration file path&#39;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-l, --log [level]&#39;</span><span class="p">,</span> <span class="s1">&#39;Log level (trace, debug, info; info by default)&#39;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-s, --source [dir]&#39;</span><span class="p">,</span> <span class="s1">&#39;Directory where API scenarios are located (&quot;api&quot; by default)&#39;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-u, --base-url [url]&#39;</span><span class="p">,</span> <span class="s1">&#39;Override the base URL of the scenario&#39;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-p, --params [name]&#39;</span><span class="p">,</span> <span class="s1">&#39;Add a custom parameter (see Custom Parameters)&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">collectParams</span><span class="p">,</span> <span class="k">this</span><span class="p">),</span> <span class="p">{})</span>
+        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-t, --show-time&#39;</span><span class="p">,</span> <span class="s1">&#39;Print the date and time with each log&#39;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-q, --show-request&#39;</span><span class="p">,</span> <span class="s1">&#39;Print options for each HTTP request (only with debug or trace log level)&#39;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-b, --show-response-body&#39;</span><span class="p">,</span> <span class="s1">&#39;Print response body for each HTTP request (only with debug or trace log level)&#39;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;--show-full-url&#39;</span><span class="p">,</span> <span class="s1">&#39;Show full URLs even when a base URL is configured (only with debug or trace log level)&#39;</span><span class="p">);</span>
+
+      <span class="nx">command</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;--help&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;  Custom Parameters:&#39;</span><span class="p">);</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">();</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;    The -p, --params option can be used multiple times to give custom parameters to a scenario.&#39;</span><span class="p">);</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;      api-copilot -p param1 -p param2=value -p param3=value&#39;</span><span class="p">);</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">();</span>
+      <span class="p">});</span>
+
+      <span class="nx">command</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">argv</span><span class="p">);</span>
+
+      <span class="k">return</span> <span class="nx">command</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">loadConfigurationFileOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">configFile</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="nx">options</span><span class="p">.</span><span class="nx">config</span> <span class="o">||</span> <span class="s1">&#39;api-copilot.yml&#39;</span><span class="p">);</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span><span class="p">(</span><span class="nx">configFile</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">yaml</span><span class="p">.</span><span class="nx">safeLoad</span><span class="p">(</span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">configFile</span><span class="p">,</span> <span class="p">{</span> <span class="nx">encoding</span><span class="o">:</span> <span class="s1">&#39;utf8&#39;</span> <span class="p">}));</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">{};</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+
+    <span class="nx">pickOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">source</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">source</span> <span class="o">?</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pick</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">_</span><span class="p">,</span> <span class="p">[</span> <span class="nx">source</span> <span class="p">].</span><span class="nx">concat</span><span class="p">(</span><span class="nx">OPTIONS</span><span class="p">))</span> <span class="o">:</span> <span class="p">{};</span>
+    <span class="p">},</span>
+
+    <span class="nx">collectParams</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">paramString</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">paramString</span><span class="p">,</span>
+          <span class="nx">value</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+      <span class="kd">var</span> <span class="nx">match</span> <span class="o">=</span> <span class="nx">PARAM_REGEXP</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">match</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">name</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+        <span class="nx">value</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+      <span class="p">}</span>
+
+      <span class="nx">params</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+
+      <span class="k">return</span> <span class="nx">params</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+
+  <span class="k">return</span> <span class="nx">Command</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

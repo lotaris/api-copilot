@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>client.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="doc-style.css" />
+  <script src="doc-filelist.js"></script>
+  <script>
+    var relativeDir = "", thisFile = "Users/unknow/Projects/lotaris/api-copilot/tmp/repo//client.js", defaultSidebar = true;
+  </script>
+  <script src="doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#client">Client</a>
+      </div>
+      <div class="heading h2">
+        <a href="#events">Events</a>
+      </div>
+      <div class="heading h2">
+        <a href="#dependencies">Dependencies</a>
+      </div>
+      <div class="heading h2">
+        <a href="#exports">Exports</a>
+      </div>
+      <div class="heading h2">
+        <a href="#constructor">Constructor</a>
+      </div>
+      <div class="heading h2">
+        <a href="#%23request(options)">#request(options)</a>
+      </div>
+      <div class="heading h2">
+        <a href="#internals">Internals</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="client">
+  <h1>
+    <a href="#client" name="client" class="pilcrow">&#182;</a>
+    Client
+  </h1>
+</div>
+
+
+<p>Promise-based HTTP client around the <a href="https://github.com/mikeal/request">request</a> library.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre></pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="events">
+  <h2>
+    <a href="#events" name="events" class="pilcrow">&#182;</a>
+    Events
+  </h2>
+</div>
+
+
+<p>A client is an <a href="http://nodejs.org/api/events.html">event emitter</a>.
+The following events can be emitted:</p>
+
+<ul>
+<li><code>request</code> - when an HTTP request is started;</li>
+<li><code>error</code> - if an HTTP request fails;</li>
+<li><code>response</code> - when an HTTP response is received.</li>
+</ul>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="dependencies">
+  <h2>
+    <a href="#dependencies" name="dependencies" class="pilcrow">&#182;</a>
+    Dependencies
+  </h2>
+</div>
+
+
+<p>The following external libraries are used:</p>
+
+<ul>
+<li><a href="https://github.com/kriskowal/q">q</a> for promises;</li>
+<li><a href="https://github.com/mikeal/request">request</a> to make HTTP requests;</li>
+<li><a href="http://underscorejs.org">underscore</a> for functional utilities.</li>
+</ul>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;underscore&#39;</span><span class="p">),</span>
+  <span class="nx">events</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;events&#39;</span><span class="p">),</span>
+  <span class="nx">q</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">),</span>
+  <span class="nx">util</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;util&#39;</span><span class="p">);</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="exports">
+  <h2>
+    <a href="#exports" name="exports" class="pilcrow">&#182;</a>
+    Exports
+  </h2>
+</div>
+
+
+<p>This module exports a function the can be used to inject mock dependencies.
+Call the function with no arguments to get the Client class with its real dependencies:</p>
+
+
+<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">clientInjector</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./client&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">Client</span> <span class="o">=</span> <span class="nx">clientInjector</span><span class="p">();</span>
+</code></pre></div>
+
+
+
+<p>To inject mock dependencies, pass an object with mocks:</p>
+
+
+<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">Client</span> <span class="o">=</span> <span class="nx">clientInjector</span><span class="p">({</span>
+  <span class="nx">request</span><span class="o">:</span> <span class="nx">requestMock</span>
+<span class="p">});</span>
+</code></pre></div>
+
+
+
+<p>The following dependencies can be mocked:</p>
+
+<ul>
+<li><code>request</code> - the request library.</li>
+</ul>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">deps</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="nx">deps</span> <span class="o">=</span> <span class="nx">deps</span> <span class="o">||</span> <span class="p">{};</span>
+  <span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">request</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">);</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="constructor_NaN">
+  <h2>
+    <a href="#constructor_NaN" name="constructor_NaN" class="pilcrow">&#182;</a>
+    Constructor
+  </h2>
+</div>
+
+
+<p>Constructs a new HTTP client. No options are required.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="kd">function</span> <span class="nx">Client</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">requestNumber</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="nx">util</span><span class="p">.</span><span class="nx">inherits</span><span class="p">(</span><span class="nx">Client</span><span class="p">,</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span><span class="p">);</span>
+
+  <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Client</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="%23request(options)">
+  <h2>
+    <a href="#%23request(options)" name="%23request(options)" class="pilcrow">&#182;</a>
+    #request(options)
+  </h2>
+</div>
+
+
+<p>Starts an HTTP request and returns a promise that will be resolved with the HTTP response
+or rejected if an error occurs.</p>
+
+
+<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span>
+  <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+  <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;http://example.com&#39;</span>
+<span class="p">});</span>
+
+<span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Server responded with: &#39;</span> <span class="o">+</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+<span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="s1">&#39;An error occurred: &#39;</span> <span class="o">+</span> <span class="nx">err</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div>
+
+
+
+<p>Look at the <a href="https://github.com/mikeal/request">request library documentation</a> for available options.</p>
+
+<p><strong>Additional options:</strong></p>
+
+<ul>
+<li><code>filters</code> - an array of filter functions; each function will be called with the request options
+and is expected to return the processed options.</li>
+</ul>
+
+
+<div class="highlight"><pre><code><span class="kd">function</span> <span class="nx">signatureFilter</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">options</span><span class="p">.</span><span class="nx">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;X-Signature&#39;</span><span class="o">:</span> <span class="nx">sha1</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">method</span> <span class="o">+</span> <span class="nx">options</span><span class="p">.</span><span class="nx">url</span><span class="p">)</span>
+  <span class="p">};</span>
+  <span class="k">return</span> <span class="nx">options</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">({</span>
+  <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+  <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;http://example.com&#39;</span><span class="p">,</span>
+  <span class="nx">filters</span><span class="o">:</span> <span class="p">[</span> <span class="nx">signatureFilter</span> <span class="p">]</span>
+<span class="p">});</span>
+</code></pre></div>
+
+
+
+<ul>
+<li><code>handler</code> - a function that is passed the request object before the
+HTTP request starts; this supports <a href="https://github.com/mikeal/request#forms">forms from the request library</a>.</li>
+</ul>
+
+
+<div class="highlight"><pre><code><span class="kd">function</span> <span class="nx">uploadFile</span><span class="p">(</span><span class="nx">request</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">form</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">form</span><span class="p">();</span>
+  <span class="nx">form</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">createReadStream</span><span class="p">(</span><span class="nx">file</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">({</span>
+  <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+  <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;http://example.com&#39;</span><span class="p">,</span>
+  <span class="nx">handler</span><span class="o">:</span> <span class="nx">uploadFile</span>
+<span class="p">});</span>
+</code></pre></div>
+
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="nx">request</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">options</span> <span class="o">=</span> <span class="nx">options</span> <span class="o">||</span> <span class="p">{};</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">options</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Request options must be an object&#39;</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">handler</span> <span class="o">!==</span> <span class="kc">undefined</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">handler</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;&quot;handler&quot; must be a function, got &#39;</span> <span class="o">+</span> <span class="k">typeof</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">handler</span><span class="p">));</span>
+      <span class="p">}</span>
+
+      <span class="kd">var</span> <span class="nx">startTime</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">(),</span>
+          <span class="nx">requestNumber</span> <span class="o">=</span> <span class="o">++</span><span class="k">this</span><span class="p">.</span><span class="nx">requestNumber</span><span class="p">,</span>
+          <span class="nx">requestHandler</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">handler</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-7" id="section-7">&#182;</a>
+</div>
+<p>The returned promise is part of chain that starts with the asynchronous construction of the request options.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">buildRequestOptions</span><span class="p">(</span><span class="nx">options</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">checkRequestOptions</span><span class="p">,</span> <span class="k">this</span><span class="p">));</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-8" id="section-8">&#182;</a>
+</div>
+<p>Then the HTTP request is started.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="nx">promise</span> <span class="o">=</span> <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">requestHandler</span><span class="p">,</span> <span class="nx">startTime</span><span class="p">));</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-9" id="section-9">&#182;</a>
+</div>
+<p>Finally, handlers are added at the end of the promise chain to emit <code>error</code> or <code>response</code> events depending on the result.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="k">return</span> <span class="nx">promise</span><span class="p">.</span><span class="nx">spread</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">handleResponse</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">startTime</span><span class="p">),</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">handleError</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">requestNumber</span><span class="p">));</span>
+    <span class="p">},</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="internals">
+  <h2>
+    <a href="#internals" name="internals" class="pilcrow">&#182;</a>
+    Internals
+  </h2>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+    <span class="nx">sendRequest</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">requestHandler</span><span class="p">,</span> <span class="nx">startTime</span><span class="p">,</span> <span class="nx">requestOptions</span><span class="p">)</span> <span class="p">{</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-11" id="section-11">&#182;</a>
+</div>
+<p><strong>EVENT:</strong> emit the <code>request</code> event with the request number and options.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="k">this</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">,</span> <span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">requestOptions</span><span class="p">);</span>
+
+      <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-12" id="section-12">&#182;</a>
+</div>
+<p>Start the request.
+Reject the deferred object if the request fails.
+Resolve it if it succeeds.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="nx">request</span><span class="p">(</span><span class="nx">requestOptions</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">([</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span> <span class="p">]);</span>
+      <span class="p">});</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-13" id="section-13">&#182;</a>
+</div>
+<p>If specified, call the request handler with the request object.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">requestHandler</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">requestHandler</span><span class="p">(</span><span class="nx">r</span><span class="p">);</span>
+      <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-14" id="section-14">&#182;</a>
+</div>
+<p>Return the promise.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">handleError</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-15" id="section-15">&#182;</a>
+</div>
+<p><strong>EVENT:</strong> if the request fails, emit the <code>error</code> event with the request number and error message.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="k">this</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">err</span><span class="p">);</span>
+
+      <span class="k">return</span> <span class="nx">q</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="p">},</span>
+
+    <span class="nx">handleResponse</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">startTime</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-16" id="section-16">&#182;</a>
+</div>
+<p><strong>EVENT:</strong> if the request succeeds, emit the <code>response</code> event with the request number, HTTP response and execution time</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="k">this</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;response&#39;</span><span class="p">,</span> <span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">-</span> <span class="nx">startTime</span><span class="p">);</span>
+
+      <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
+    <span class="p">},</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-17" id="section-17">&#182;</a>
+</div>
+<p>Check the <code>method</code> and <code>url</code> options.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="nx">checkRequestOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">method</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;&quot;method&quot; must be a string, got &#39;</span> <span class="o">+</span> <span class="nx">options</span><span class="p">.</span><span class="nx">method</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">url</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;&quot;url&quot; must be a string, got &#39;</span> <span class="o">+</span> <span class="nx">options</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="nx">options</span><span class="p">;</span>
+    <span class="p">},</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-18" id="section-18">&#182;</a>
+</div>
+<p>Build the options for the request library.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="nx">buildRequestOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">requestOptions</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">omit</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;filters&#39;</span><span class="p">,</span> <span class="s1">&#39;handler&#39;</span><span class="p">),</span> <span class="p">{</span>
+        <span class="nx">url</span><span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">url</span>
+      <span class="p">});</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">method</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">requestOptions</span><span class="p">.</span><span class="nx">method</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">method</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">();</span>
+      <span class="p">}</span>
+
+      <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">q</span><span class="p">(</span><span class="nx">requestOptions</span><span class="p">);</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">filters</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">filters</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">filter</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-19" id="section-19">&#182;</a>
+</div>
+<p>Chain request filters with promises so that they may be asynchronous.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+          <span class="nx">promise</span> <span class="o">=</span> <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">filter</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">ensureRequestOptions</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">i</span><span class="p">));</span>
+        <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="nx">promise</span><span class="p">;</span>
+    <span class="p">},</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-20" id="section-20">&#182;</a>
+</div>
+<p>After each filter, ensure that the returned request options are valid.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="nx">ensureRequestOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">filterIndex</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">options</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Request filter at index &#39;</span> <span class="o">+</span> <span class="nx">filterIndex</span> <span class="o">+</span> <span class="s1">&#39; returned nothing; it must return the filtered request options&#39;</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">options</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Expected request filter at index &#39;</span> <span class="o">+</span> <span class="nx">filterIndex</span> <span class="o">+</span> <span class="s1">&#39; to return the request options as an object, got &#39;</span> <span class="o">+</span> <span class="k">typeof</span><span class="p">(</span><span class="nx">options</span><span class="p">));</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="nx">options</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+
+  <span class="k">return</span> <span class="nx">Client</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

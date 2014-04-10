@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>index.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="doc-style.css" />
+  <script src="doc-filelist.js"></script>
+  <script>
+    var relativeDir = "", thisFile = "Users/unknow/Projects/lotaris/api-copilot/tmp/repo//index.js", defaultSidebar = true;
+  </script>
+  <script src="doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#api%20copilot">API Copilot</a>
+      </div>
+      <div class="heading h2">
+        <a href="#exports">Exports</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="api%20copilot">
+  <h1>
+    <a href="#api%20copilot" name="api%20copilot" class="pilcrow">&#182;</a>
+    API Copilot
+  </h1>
+</div>
+
+
+<p>Write testing or data population scenarios for your APIs.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre></pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="exports">
+  <h2>
+    <a href="#exports" name="exports" class="pilcrow">&#182;</a>
+    Exports
+  </h2>
+</div>
+
+
+<p>When requiring <code>api-copilot</code>, the following things are provided:</p>
+
+<ul>
+<li><code>Scenario</code> - the class used to define scenarios (see <a href="scenario.js.html">scenario.js</a>);</li>
+<li><code>cli</code> - a function that runs API Copilot in the current working directory;</li>
+</ul>
+
+
+<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">copilot</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;api-copilot&#39;</span><span class="p">);</span>
+<span class="nx">copilot</span><span class="p">.</span><span class="nx">cli</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">)</span>
+</code></pre></div>
+
+
+
+<ul>
+<li><code>version</code> - the semantic version string (e.g. <code>1.2.3</code>).</li>
+</ul>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">Scenario</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./scenario&#39;</span><span class="p">)(),</span>
+  <span class="nx">cli</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./cli&#39;</span><span class="p">),</span>
+  <span class="nx">version</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../package&#39;</span><span class="p">).</span><span class="nx">version</span>
+<span class="p">};</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

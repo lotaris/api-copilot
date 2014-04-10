@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>cli.logger.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="doc-style.css" />
+  <script src="doc-filelist.js"></script>
+  <script>
+    var relativeDir = "", thisFile = "Users/unknow/Projects/lotaris/api-copilot/tmp/repo//cli.logger.js", defaultSidebar = true;
+  </script>
+  <script src="doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+          <h1>cli.logger.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1">&#182;</a>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;underscore&#39;</span><span class="p">),</span>
+    <span class="nx">httpStatus</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;http-status&#39;</span><span class="p">),</span>
+    <span class="nx">inflection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;inflection&#39;</span><span class="p">),</span>
+    <span class="nx">url</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">);</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>FIXME: make a pull request into http-status for this</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="nx">httpStatus</span><span class="p">[</span><span class="mi">422</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Unprocessable Entity&#39;</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">EVENTS</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">scenario</span><span class="o">:</span> <span class="p">[</span> <span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span> <span class="p">],</span>
+  <span class="nx">client</span><span class="o">:</span> <span class="p">[</span> <span class="s1">&#39;request&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="s1">&#39;response&#39;</span> <span class="p">],</span>
+  <span class="nx">step</span><span class="o">:</span> <span class="p">[</span> <span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;skip&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="s1">&#39;done&#39;</span> <span class="p">]</span>
+<span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">deps</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="nx">deps</span> <span class="o">=</span> <span class="nx">deps</span> <span class="o">||</span> <span class="p">{};</span>
+  <span class="kd">var</span> <span class="nx">log4js</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">log4js</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;log4js&#39;</span><span class="p">);</span>
+
+  <span class="kd">function</span> <span class="nx">Logger</span><span class="p">(</span><span class="nx">scenario</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">this</span><span class="p">.</span><span class="nx">logger</span> <span class="o">=</span> <span class="nx">log4js</span><span class="p">.</span><span class="nx">getLogger</span><span class="p">(</span><span class="nx">scenario</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+
+    <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">EVENTS</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">events</span><span class="p">,</span> <span class="nx">type</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">prefix</span> <span class="o">=</span> <span class="nx">type</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span>
+          <span class="nx">methodPrefix</span> <span class="o">=</span> <span class="s1">&#39;on&#39;</span> <span class="o">+</span> <span class="nx">inflection</span><span class="p">.</span><span class="nx">capitalize</span><span class="p">(</span><span class="nx">type</span><span class="p">);</span>
+
+      <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">events</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">scenario</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">prefix</span> <span class="o">+</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="nx">methodPrefix</span> <span class="o">+</span> <span class="nx">inflection</span><span class="p">.</span><span class="nx">capitalize</span><span class="p">(</span><span class="nx">event</span><span class="p">)],</span> <span class="k">this</span><span class="p">));</span>
+      <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
+    <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
+
+    <span class="nx">scenario</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;configure&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">configure</span><span class="p">,</span> <span class="k">this</span><span class="p">));</span>
+  <span class="p">}</span>
+
+  <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Logger</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
+
+    <span class="nx">configure</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pick</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;baseUrl&#39;</span><span class="p">,</span> <span class="s1">&#39;showRequest&#39;</span><span class="p">,</span> <span class="s1">&#39;showResponseBody&#39;</span><span class="p">,</span> <span class="s1">&#39;showFullUrl&#39;</span><span class="p">));</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">configured</span> <span class="o">&amp;&amp;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;baseUrl&#39;</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;Base URL set to &#39;</span> <span class="o">+</span> <span class="nx">options</span><span class="p">.</span><span class="nx">baseUrl</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">log</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">setLevel</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">log</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">configured</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">level</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="o">==</span> <span class="nx">options</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">())</span> <span class="p">{</span>
+          <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;Log level set to &#39;</span> <span class="o">+</span> <span class="nx">options</span><span class="p">.</span><span class="nx">log</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">configured</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">onScenarioStart</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">stepNumber</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">startTime</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">();</span>
+
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">();</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">name</span><span class="p">.</span><span class="nx">bold</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s1">&#39;Base URL: &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">baseUrl</span> <span class="o">?</span> <span class="nx">options</span><span class="p">.</span><span class="nx">baseUrl</span> <span class="o">:</span> <span class="s1">&#39;none&#39;</span><span class="p">));</span>
+    <span class="p">},</span>
+
+    <span class="nx">onScenarioError</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span> <span class="k">instanceof</span> <span class="nb">Error</span> <span class="o">&amp;&amp;</span> <span class="nx">err</span><span class="p">.</span><span class="nx">stack</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">isLevelEnabled</span><span class="p">(</span><span class="s1">&#39;trace&#39;</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">trace</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">stack</span><span class="p">.</span><span class="nx">red</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">red</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">();</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="s1">&#39;Scenario terminated&#39;</span><span class="p">.</span><span class="nx">yellow</span><span class="p">);</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">();</span>
+    <span class="p">},</span>
+
+    <span class="nx">onScenarioEnd</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">duration</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">-</span> <span class="k">this</span><span class="p">.</span><span class="nx">startTime</span><span class="p">;</span>
+
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">();</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">((</span><span class="s1">&#39;DONE in &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">duration</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">).</span><span class="nx">toFixed</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;s&#39;</span> <span class="o">+</span> <span class="s1">&#39;!&#39;</span><span class="p">).</span><span class="nx">green</span><span class="p">);</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">();</span> 
+
+      <span class="k">delete</span> <span class="k">this</span><span class="p">.</span><span class="nx">configured</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">onStepStart</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">description</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">stepStart</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">();</span>
+
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">();</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">((</span><span class="s1">&#39;STEP &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="o">++</span><span class="k">this</span><span class="p">.</span><span class="nx">stepNumber</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="nx">description</span><span class="p">.</span><span class="nx">name</span><span class="p">).</span><span class="nx">bold</span><span class="p">);</span>
+    <span class="p">},</span>
+
+    <span class="nx">onStepSkip</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">description</span><span class="p">,</span> <span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">((</span><span class="s1">&#39;Skipped: &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">message</span> <span class="o">||</span> <span class="s1">&#39;no reason&#39;</span><span class="p">)).</span><span class="nx">grey</span><span class="p">);</span>
+    <span class="p">},</span>
+
+    <span class="nx">onStepError</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">description</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<p>nothing to do; handled by onScenarioError</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="p">},</span>
+
+    <span class="nx">onStepDone</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">description</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s1">&#39;Completed in &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">-</span> <span class="k">this</span><span class="p">.</span><span class="nx">stepStart</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;ms&#39;</span><span class="p">);</span>
+    <span class="p">},</span>
+
+    <span class="nx">onClientRequest</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">requestOptions</span><span class="p">,</span> <span class="nx">originalOptions</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">logRequest</span><span class="p">(</span><span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">requestOptions</span><span class="p">.</span><span class="nx">method</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">buildDisplayUrl</span><span class="p">(</span><span class="nx">requestOptions</span><span class="p">.</span><span class="nx">url</span><span class="p">));</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">showRequest</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">logRequest</span><span class="p">(</span><span class="nx">requestNumber</span><span class="p">,</span> <span class="s1">&#39;request options: &#39;</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">requestOptions</span><span class="p">).</span><span class="nx">magenta</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+
+    <span class="nx">onClientError</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<p>nothing to do; handled by onScenarioError</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="p">},</span>
+
+    <span class="nx">onClientResponse</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">time</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">status</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nx">httpStatus</span><span class="p">[</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">],</span>
+          <span class="nx">statusColor</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">&gt;=</span> <span class="mi">200</span> <span class="o">&amp;&amp;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">&lt;=</span> <span class="mi">399</span> <span class="o">?</span> <span class="s1">&#39;green&#39;</span> <span class="o">:</span> <span class="s1">&#39;yellow&#39;</span><span class="p">;</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">logRequest</span><span class="p">(</span><span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">status</span><span class="p">[</span><span class="nx">statusColor</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; in &#39;</span> <span class="o">+</span> <span class="nx">time</span> <span class="o">+</span> <span class="s1">&#39;ms&#39;</span><span class="p">);</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">showResponseBody</span> <span class="o">&amp;&amp;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">logRequest</span><span class="p">(</span><span class="nx">requestNumber</span><span class="p">,</span> <span class="s1">&#39;response body: &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">)</span> <span class="o">?</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span> <span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">)).</span><span class="nx">magenta</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    
+    <span class="nx">logRequest</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span><span class="p">((</span><span class="s1">&#39;http[&#39;</span> <span class="o">+</span> <span class="nx">requestNumber</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span><span class="p">).</span><span class="nx">cyan</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nx">message</span><span class="p">);</span>
+    <span class="p">},</span>
+
+    <span class="nx">buildDisplayUrl</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">urlString</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">baseUrl</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">showFullUrl</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">urlString</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="k">try</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">parsedUrl</span> <span class="o">=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">urlString</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nx">parsedUrl</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">?</span> <span class="nx">parsedUrl</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">:</span> <span class="nx">urlString</span><span class="p">;</span>
+      <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">urlString</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+
+  <span class="k">return</span> <span class="nx">Logger</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

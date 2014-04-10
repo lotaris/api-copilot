@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>scenario.client.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="doc-style.css" />
+  <script src="doc-filelist.js"></script>
+  <script>
+    var relativeDir = "", thisFile = "Users/unknow/Projects/lotaris/api-copilot/tmp/repo//scenario.client.js", defaultSidebar = true;
+  </script>
+  <script src="doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#scenario%20client%20extensions">Scenario Client Extensions</a>
+      </div>
+      <div class="heading h2">
+        <a href="#dependencies">Dependencies</a>
+      </div>
+      <div class="heading h2">
+        <a href="#exports">Exports</a>
+      </div>
+      <div class="heading h2">
+        <a href="#methods">Methods</a>
+      </div>
+      <div class="heading h3">
+        <a href="#%23request(options)">#request(options)</a>
+      </div>
+      <div class="heading h3">
+        <a href="#%23setdefaultrequestoptions(options)">#setDefaultRequestOptions(options)</a>
+      </div>
+      <div class="heading h3">
+        <a href="#%23extenddefaultrequestoptions(options)">#extendDefaultRequestOptions(options)</a>
+      </div>
+      <div class="heading h3">
+        <a href="#%23cleardefaultrequestoptions(names...)">#clearDefaultRequestOptions(names...)</a>
+      </div>
+      <div class="heading h3">
+        <a href="#%23addrequestfilter(name%2C%20filter)">#addRequestFilter(name, filter)</a>
+      </div>
+      <div class="heading h3">
+        <a href="#%23removerequestfilters(namesorfunctions...)">#removeRequestFilters(namesOrFunctions...)</a>
+      </div>
+      <div class="heading h2">
+        <a href="#request%20aliases">Request Aliases</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="scenario%20client%20extensions">
+  <h1>
+    <a href="#scenario%20client%20extensions" name="scenario%20client%20extensions" class="pilcrow">&#182;</a>
+    Scenario Client Extensions
+  </h1>
+</div>
+
+
+<p><a href="scenario.js.html">Scenario</a> methods to make HTTP calls and manage request options.</p>
+
+<p><strong>Related components:</strong></p>
+
+<ul>
+<li><a href="client.js.html">client.js</a> - the client that performs the HTTP requests;</li>
+<li><a href="scenario.js.html">scenario.js</a> - API scenario where the client can be used.</li>
+</ul>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre></pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="dependencies">
+  <h2>
+    <a href="#dependencies" name="dependencies" class="pilcrow">&#182;</a>
+    Dependencies
+  </h2>
+</div>
+
+
+<p>The following external libraries are used:</p>
+
+<ul>
+<li><a href="http://underscorejs.org">underscore</a> for functional utilities.</li>
+</ul>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;underscore&#39;</span><span class="p">),</span>
+    <span class="nx">slice</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="exports">
+  <h2>
+    <a href="#exports" name="exports" class="pilcrow">&#182;</a>
+    Exports
+  </h2>
+</div>
+
+
+<p>This module exports an object with methods, to be used to extend the scenario prototype.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="methods">
+  <h2>
+    <a href="#methods" name="methods" class="pilcrow">&#182;</a>
+    Methods
+  </h2>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><p><a name="method-request"></a></p>
+
+
+<div class="pilwrap" id="%23request(options)">
+  <h3>
+    <a href="#%23request(options)" name="%23request(options)" class="pilcrow">&#182;</a>
+    #request(options)
+  </h3>
+</div>
+
+
+<p>Starts an HTTP request and returns a promise that will be resolved with the HTTP response
+or rejected if an error occurs. Return this promise in a scenario step and the HTTP
+response will be available to the next step.</p>
+
+
+<div class="highlight"><pre><code><span class="nx">scenario</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="s1">&#39;a step making an HTTP call&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">({</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;http://example.com&#39;</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+
+<span class="nx">scenario</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="s1">&#39;another step using the response&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div>
+
+
+
+<p>See <a href="client.js.html">client.js</a> for available options.
+This method has <a href="#request%20aliases">aliases for common HTTP methods</a>.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="nx">request</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6">&#182;</a>
+</div>
+<p>Default request options can be configured to be added to all requests.
+See <a href="#method-setDefaultRequestOptions">#setDefaultRequestOptions</a>.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="nx">options</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-7" id="section-7">&#182;</a>
+</div>
+<p>A base URL can be configured to be automatically preprended to all URLs.
+See <a href="scenario.js.html#constructor">scenario options</a>.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">baseUrl</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">options</span><span class="p">.</span><span class="nx">url</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">baseUrl</span> <span class="o">+</span> <span class="nx">options</span><span class="p">.</span><span class="nx">url</span><span class="p">;</span>
+    <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-8" id="section-8">&#182;</a>
+</div>
+<p>Request filter functions can be configured to modify the request options prior to the request.
+See <a href="#method-addRequestFilter">#addRequestFilter</a>.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">requestFilters</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">options</span><span class="p">.</span><span class="nx">filters</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">requestFilters</span><span class="p">,</span> <span class="s1">&#39;filter&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+  <span class="p">},</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><p><a name="method-setDefaultRequestOptions"></a></p>
+
+
+<div class="pilwrap" id="%23setdefaultrequestoptions(options)">
+  <h3>
+    <a href="#%23setdefaultrequestoptions(options)" name="%23setdefaultrequestoptions(options)" class="pilcrow">&#182;</a>
+    #setDefaultRequestOptions(options)
+  </h3>
+</div>
+
+
+<p>Sets the default request options to the specified options.
+All further requests will use these options by default.</p>
+
+
+<div class="highlight"><pre><code><span class="k">this</span><span class="p">.</span><span class="nx">setDefaultRequestOptions</span><span class="p">({</span> <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span> <span class="p">});</span>
+</code></pre></div>
+
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="nx">setDefaultRequestOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span> <span class="o">=</span> <span class="nx">options</span><span class="p">;</span>
+  <span class="p">},</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><p><a name="method-extendDefaultRequestOptions"></a></p>
+
+
+<div class="pilwrap" id="%23extenddefaultrequestoptions(options)">
+  <h3>
+    <a href="#%23extenddefaultrequestoptions(options)" name="%23extenddefaultrequestoptions(options)" class="pilcrow">&#182;</a>
+    #extendDefaultRequestOptions(options)
+  </h3>
+</div>
+
+
+<p>Extends the default request options with the specified additional options.</p>
+
+
+<div class="highlight"><pre><code><span class="k">this</span><span class="p">.</span><span class="nx">setDefaultRequestOptions</span><span class="p">({</span> <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span> <span class="p">});</span>
+<span class="k">this</span><span class="p">.</span><span class="nx">extendDefaultRequestOptions</span><span class="p">({</span> <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span> <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="s1">&#39;application/json&#39;</span> <span class="p">}</span> <span class="p">});</span>
+<span class="c1">// default options will be { json: true, headers: { &#39;Accept&#39;: &#39;application/json&#39; } }</span>
+</code></pre></div>
+
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="nx">extendDefaultRequestOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">var</span> <span class="nx">newDefaultRequestOptions</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="nx">newDefaultRequestOptions</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">memo</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-11" id="section-11">&#182;</a>
+</div>
+<p>Set an option to undefined to clear it.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">value</span> <span class="o">!==</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">memo</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="nx">memo</span><span class="p">;</span>
+    <span class="p">},</span> <span class="p">{});</span>
+  <span class="p">},</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><p><a name="method-clearDefaultRequestOptions"></a></p>
+
+
+<div class="pilwrap" id="%23cleardefaultrequestoptions(names...)">
+  <h3>
+    <a href="#%23cleardefaultrequestoptions(names...)" name="%23cleardefaultrequestoptions(names...)" class="pilcrow">&#182;</a>
+    #clearDefaultRequestOptions(names...)
+  </h3>
+</div>
+
+
+<p>Clears the default request options with the specified names.</p>
+
+
+<div class="highlight"><pre><code><span class="k">this</span><span class="p">.</span><span class="nx">clearDefaultRequestOptions</span><span class="p">(</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;headers&#39;</span><span class="p">);</span>
+</code></pre></div>
+
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="nx">clearDefaultRequestOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">var</span> <span class="nx">names</span> <span class="o">=</span> <span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-13" id="section-13">&#182;</a>
+</div>
+<p>Call this method with no arguments to clear all options.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">names</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">delete</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">names</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">delete</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span>
+      <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><p><a name="method-addRequestFilter"></a></p>
+
+
+<div class="pilwrap" id="%23addrequestfilter(name%2C%20filter)">
+  <h3>
+    <a href="#%23addrequestfilter(name%2C%20filter)" name="%23addrequestfilter(name%2C%20filter)" class="pilcrow">&#182;</a>
+    #addRequestFilter(name, filter)
+  </h3>
+</div>
+
+
+<p>Adds a filter function to process options before an HTTP request is started.
+The filter function will be passed the complete request options and is expected
+to return the processed options.</p>
+
+
+<div class="highlight"><pre><code><span class="k">this</span><span class="p">.</span><span class="nx">addRequestFilter</span><span class="p">(</span><span class="s1">&#39;signature&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">options</span><span class="p">.</span><span class="nx">headers</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;X-Signature&#39;</span><span class="o">:</span> <span class="nx">sha1</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">method</span> <span class="o">+</span> <span class="nx">options</span><span class="p">.</span><span class="nx">url</span><span class="p">)</span> <span class="p">};</span>
+  <span class="k">return</span> <span class="nx">options</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre></div>
+
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="nx">addRequestFilter</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">filter</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{};</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-15" id="section-15">&#182;</a>
+</div>
+<p>Call this method with only a filter function to define an unnamed filter.</p>
+
+
+<div class="highlight"><pre><code><span class="k">this</span><span class="p">.</span><span class="nx">addRequestFilter</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">options</span><span class="p">.</span><span class="nx">url</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">url</span> <span class="o">+</span> <span class="s1">&#39;/suffix&#39;</span><span class="p">;</span>
+  <span class="k">return</span> <span class="nx">options</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre></div>
+
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">filter</span><span class="o">:</span> <span class="nx">name</span> <span class="p">};</span>
+
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">removeRequestFilters</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+      <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">filter</span><span class="o">:</span> <span class="nx">filter</span> <span class="p">};</span>
+    <span class="p">}</span>
+
+    <span class="k">this</span><span class="p">.</span><span class="nx">requestFilters</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+  <span class="p">},</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><p><a name="method-removeRequestFilters"></a></p>
+
+
+<div class="pilwrap" id="%23removerequestfilters(namesorfunctions...)">
+  <h3>
+    <a href="#%23removerequestfilters(namesorfunctions...)" name="%23removerequestfilters(namesorfunctions...)" class="pilcrow">&#182;</a>
+    #removeRequestFilters(namesOrFunctions...)
+  </h3>
+</div>
+
+
+<p>Removes the specified request filters. Arguments should be either filter names
+or filter functions.</p>
+
+
+<div class="highlight"><pre><code><span class="k">this</span><span class="p">.</span><span class="nx">removeRequestFilters</span><span class="p">(</span><span class="s1">&#39;signature&#39;</span><span class="p">,</span> <span class="s1">&#39;otherFilter&#39;</span><span class="p">);</span>
+<span class="k">this</span><span class="p">.</span><span class="nx">removeRequestFilters</span><span class="p">(</span><span class="nx">filterFunc</span><span class="p">);</span>
+</code></pre></div>
+
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="nx">removeRequestFilters</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">var</span> <span class="nx">toRemove</span> <span class="o">=</span> <span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-17" id="section-17">&#182;</a>
+</div>
+<p>Call this method with no arguments to remove all filters.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">toRemove</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">requestFilters</span> <span class="o">=</span> <span class="p">[];</span>
+      <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">var</span> <span class="nx">namesToRemove</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">toRemove</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">}),</span> <span class="nx">functionsToRemove</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">toRemove</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">});</span>
+
+    <span class="k">this</span><span class="p">.</span><span class="nx">requestFilters</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">requestFilters</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">filter</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">namesToRemove</span><span class="p">,</span> <span class="nx">filter</span><span class="p">.</span><span class="nx">name</span><span class="p">)</span> <span class="o">||</span> <span class="nx">_</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">functionsToRemove</span><span class="p">,</span> <span class="nx">filter</span><span class="p">.</span><span class="nx">filter</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="request%20aliases">
+  <h2>
+    <a href="#request%20aliases" name="request%20aliases" class="pilcrow">&#182;</a>
+    Request Aliases
+  </h2>
+</div>
+
+
+<p>The <code>#get</code>, <code>#head</code>, <code>#post</code>, <code>#put</code>, <code>#patch</code> and <code>#delete</code> methods are aliases for
+<a href="#method-request">#request</a> that automatically specify the HTTP method.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">([</span> <span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="s1">&#39;head&#39;</span><span class="p">,</span> <span class="s1">&#39;post&#39;</span><span class="p">,</span> <span class="s1">&#39;put&#39;</span><span class="p">,</span> <span class="s1">&#39;patch&#39;</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span> <span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">method</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">[</span><span class="nx">method</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span> <span class="nx">options</span><span class="p">,</span> <span class="p">{</span> <span class="nx">method</span><span class="o">:</span> <span class="nx">method</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()</span> <span class="p">}));</span>
+  <span class="p">};</span>
+<span class="p">});</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>
