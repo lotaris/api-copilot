@@ -6,7 +6,7 @@
   <link rel="stylesheet" media="all" href="doc-style.css" />
   <script src="doc-filelist.js"></script>
   <script>
-    var relativeDir = "", thisFile = "Users/unknow/Projects/lotaris/api-copilot/tmp/repo//client.js", defaultSidebar = true;
+    var relativeDir = "", thisFile = "Users/unknow/Projects/lotaris/api-copilot/tmp/api-copilot//client.js", defaultSidebar = true;
   </script>
   <script src="doc-script.js"></script>
 </head>
@@ -78,6 +78,8 @@ The following events can be emitted:</p>
 <li><code>error</code> - if an HTTP request fails;</li>
 <li><code>response</code> - when an HTTP response is received.</li>
 </ul>
+
+<p>See <a href="#internals">Internals</a> for more information on these events.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
 
@@ -343,7 +345,7 @@ HTTP request starts; this supports <a href="https://github.com/mikeal/request#fo
 <div class="pilwrap">
   <a class="pilcrow" href="#section-11" id="section-11">&#182;</a>
 </div>
-<p><strong>EVENT:</strong> emit the <code>request</code> event with the request number and options.</p>
+<p><strong>EVENT:</strong> the <code>request</code> event is emitted when an HTTP request starts, with the request number and options as arguments.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
       <span class="k">this</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">,</span> <span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">requestOptions</span><span class="p">);</span>
@@ -359,9 +361,7 @@ HTTP request starts; this supports <a href="https://github.com/mikeal/request#fo
 <div class="pilwrap">
   <a class="pilcrow" href="#section-12" id="section-12">&#182;</a>
 </div>
-<p>Start the request.
-Reject the deferred object if the request fails.
-Resolve it if it succeeds.</p>
+<p>The returned promise is resolved if the request succeeds, rejected if it fails.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
       <span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="nx">request</span><span class="p">(</span><span class="nx">requestOptions</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
@@ -381,25 +381,13 @@ Resolve it if it succeeds.</p>
 <div class="pilwrap">
   <a class="pilcrow" href="#section-13" id="section-13">&#182;</a>
 </div>
-<p>If specified, call the request handler with the request object.</p>
+<p>If specified, the request handler function is called with the request object.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
       <span class="k">if</span> <span class="p">(</span><span class="nx">requestHandler</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">requestHandler</span><span class="p">(</span><span class="nx">r</span><span class="p">);</span>
       <span class="p">}</span>
 
-
-</pre></div>
-        </td>
-      </tr>
-      <tr>
-        <td class="docs">
-<div class="pilwrap">
-  <a class="pilcrow" href="#section-14" id="section-14">&#182;</a>
-</div>
-<p>Return the promise.</p>
-        </td>
-        <td class="code highlight"><div class="highlight"><pre>
       <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">;</span>
     <span class="p">},</span>
 
@@ -412,9 +400,9 @@ Resolve it if it succeeds.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-15" id="section-15">&#182;</a>
+  <a class="pilcrow" href="#section-14" id="section-14">&#182;</a>
 </div>
-<p><strong>EVENT:</strong> if the request fails, emit the <code>error</code> event with the request number and error message.</p>
+<p><strong>EVENT:</strong> the <code>error</code> event is emitted if the request fails, with the request number and error message as arguments.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
       <span class="k">this</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">err</span><span class="p">);</span>
@@ -431,9 +419,9 @@ Resolve it if it succeeds.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-16" id="section-16">&#182;</a>
+  <a class="pilcrow" href="#section-15" id="section-15">&#182;</a>
 </div>
-<p><strong>EVENT:</strong> if the request succeeds, emit the <code>response</code> event with the request number, HTTP response and execution time</p>
+<p><strong>EVENT:</strong> the <code>response</code> event is emitted if the request succeeds, with the request number, HTTP response and execution time as arguments.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
       <span class="k">this</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;response&#39;</span><span class="p">,</span> <span class="nx">requestNumber</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">-</span> <span class="nx">startTime</span><span class="p">);</span>
@@ -448,9 +436,10 @@ Resolve it if it succeeds.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-17" id="section-17">&#182;</a>
+  <a class="pilcrow" href="#section-16" id="section-16">&#182;</a>
 </div>
-<p>Check the <code>method</code> and <code>url</code> options.</p>
+<p>An error is thrown if either the <code>method</code> or the <code>url</code> option is not a string.
+Note that this error is caught by the promise chain and causes the returned promise to be rejected.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
     <span class="nx">checkRequestOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
@@ -463,6 +452,25 @@ Resolve it if it succeeds.</p>
       <span class="k">return</span> <span class="nx">options</span><span class="p">;</span>
     <span class="p">},</span>
 
+    <span class="nx">buildRequestOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-17" id="section-17">&#182;</a>
+</div>
+<p>Options for the request library are the same as the ones provided to <code>#request</code>
+but without the <code>filters</code> and <code>handler</code> options which are specific to this client.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="kd">var</span> <span class="nx">requestOptions</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">omit</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;filters&#39;</span><span class="p">,</span> <span class="s1">&#39;handler&#39;</span><span class="p">),</span> <span class="p">{</span>
+        <span class="nx">url</span><span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">url</span>
+      <span class="p">});</span>
+
 
 </pre></div>
         </td>
@@ -472,15 +480,9 @@ Resolve it if it succeeds.</p>
 <div class="pilwrap">
   <a class="pilcrow" href="#section-18" id="section-18">&#182;</a>
 </div>
-<p>Build the options for the request library.</p>
+<p>The HTTP method is automatically converted to uppercase.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
-    <span class="nx">buildRequestOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-
-      <span class="kd">var</span> <span class="nx">requestOptions</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">omit</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;filters&#39;</span><span class="p">,</span> <span class="s1">&#39;handler&#39;</span><span class="p">),</span> <span class="p">{</span>
-        <span class="nx">url</span><span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">url</span>
-      <span class="p">});</span>
-
       <span class="k">if</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">method</span><span class="p">))</span> <span class="p">{</span>
         <span class="nx">requestOptions</span><span class="p">.</span><span class="nx">method</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">method</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">();</span>
       <span class="p">}</span>
@@ -499,7 +501,7 @@ Resolve it if it succeeds.</p>
 <div class="pilwrap">
   <a class="pilcrow" href="#section-19" id="section-19">&#182;</a>
 </div>
-<p>Chain request filters with promises so that they may be asynchronous.</p>
+<p>Request filters are executed in a promise chain so that they may be asynchronous.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
           <span class="nx">promise</span> <span class="o">=</span> <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">filter</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">ensureRequestOptions</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">i</span><span class="p">));</span>
@@ -518,7 +520,8 @@ Resolve it if it succeeds.</p>
 <div class="pilwrap">
   <a class="pilcrow" href="#section-20" id="section-20">&#182;</a>
 </div>
-<p>After each filter, ensure that the returned request options are valid.</p>
+<p>After each filter, this check ensures that the returned request options are valid.
+Again, any error is caught by the promise chain and causes the returned promise to be rejected.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
     <span class="nx">ensureRequestOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">filterIndex</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>

@@ -6,7 +6,7 @@
   <link rel="stylesheet" media="all" href="doc-style.css" />
   <script src="doc-filelist.js"></script>
   <script>
-    var relativeDir = "", thisFile = "Users/unknow/Projects/lotaris/api-copilot/tmp/repo//index.js", defaultSidebar = true;
+    var relativeDir = "", thisFile = "Users/unknow/Projects/lotaris/api-copilot/tmp/api-copilot//index.js", defaultSidebar = true;
   </script>
   <script src="doc-script.js"></script>
 </head>
@@ -20,6 +20,9 @@
     <div id="headings">
       <div class="heading h1">
         <a href="#api%20copilot">API Copilot</a>
+      </div>
+      <div class="heading h2">
+        <a href="#components">Components</a>
       </div>
       <div class="heading h2">
         <a href="#exports">Exports</a>
@@ -41,8 +44,38 @@
 
 
 <p>Write testing or data population scenarios for your APIs.</p>
+
+<p>This tool provides a pattern to run sequential asynchronous steps while
+avoiding callbacks with the use of <a href="http://promises-aplus.github.io/promises-spec/">promises</a>.
+It also includes a promise-based HTTP client based on the <a href="https://github.com/mikeal/request">request</a> library.
+Promises are provided by the <a href="https://github.com/kriskowal/q">q</a> library.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre></pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="components">
+  <h2>
+    <a href="#components" name="components" class="pilcrow">&#182;</a>
+    Components
+  </h2>
+</div>
+
+
+<ul>
+<li><a href="scenario.js.html">scenario.js</a> - the class used to define data population or testing scenarios;</li>
+<li><a href="scenario.client.js.html">scenario.client.js</a> - scenario extensions to make HTTP calls;</li>
+<li><a href="client.js.html">client.js</a> - a promise-based HTTP client around the <a href="https://github.com/mikeal/request">request</a> library.</li>
+<li><a href="cli.logger.js.html">cli.logger.js</a> - a command line logger that listens to scenario events;</li>
+<li><a href="cli.command.js.html">cli.command.js</a> - class responsible for parsing the configuration file and command line options;</li>
+<li><a href="cli.js.html">cli.js</a> - function that runs API Copilot in the current working directory.</li>
+</ul>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+
+</pre></div>
         </td>
       </tr>
       <tr>
