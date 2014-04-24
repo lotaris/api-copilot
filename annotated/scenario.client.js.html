@@ -40,6 +40,9 @@
         <a href="#%23extenddefaultrequestoptions(options)">#extendDefaultRequestOptions(options)</a>
       </div>
       <div class="heading h3">
+        <a href="#%23mergedefaultrequestoptions(options)">#mergeDefaultRequestOptions(options)</a>
+      </div>
+      <div class="heading h3">
         <a href="#%23cleardefaultrequestoptions(names...)">#clearDefaultRequestOptions(names...)</a>
       </div>
       <div class="heading h3">
@@ -97,6 +100,7 @@
         </td>
         <td class="code highlight"><div class="highlight"><pre>
 <span class="kd">var</span> <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;underscore&#39;</span><span class="p">),</span>
+    <span class="nx">merge</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;deepmerge&#39;</span><span class="p">),</span>
     <span class="nx">slice</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">;</span>
 
 
@@ -162,7 +166,7 @@ response will be available to the next step.</p>
   <span class="p">});</span>
 <span class="p">});</span>
 
-<span class="nx">scenario</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="s1">&#39;another step using the response&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+<span class="nx">scenario</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="s1">&#39;using the response&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
   <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
 <span class="p">});</span>
 </code></pre></div>
@@ -188,7 +192,7 @@ This method has <a href="#request%20aliases">aliases for common HTTP methods</a>
 See <a href="#method-setDefaultRequestOptions">#setDefaultRequestOptions</a>.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
-    <span class="nx">options</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+    <span class="nx">options</span> <span class="o">=</span> <span class="nx">merge</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span> <span class="o">||</span> <span class="p">{},</span> <span class="nx">options</span> <span class="o">||</span> <span class="p">{});</span>
 
 
 </pre></div>
@@ -204,7 +208,7 @@ See <a href="scenario.js.html#constructor">scenario options</a>.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
     <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">baseUrl</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">options</span><span class="p">.</span><span class="nx">url</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">baseUrl</span> <span class="o">+</span> <span class="nx">options</span><span class="p">.</span><span class="nx">url</span><span class="p">;</span>
+      <span class="nx">options</span><span class="p">.</span><span class="nx">url</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">url</span> <span class="o">?</span> <span class="k">this</span><span class="p">.</span><span class="nx">baseUrl</span> <span class="o">+</span> <span class="nx">options</span><span class="p">.</span><span class="nx">url</span> <span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">baseUrl</span><span class="p">;</span>
     <span class="p">}</span>
 
 
@@ -224,7 +228,111 @@ See <a href="#method-addRequestFilter">#addRequestFilter</a>.</p>
       <span class="nx">options</span><span class="p">.</span><span class="nx">filters</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">requestFilters</span><span class="p">,</span> <span class="s1">&#39;filter&#39;</span><span class="p">);</span>
     <span class="p">}</span>
 
-    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-9" id="section-9">&#182;</a>
+</div>
+<p>Some response properties can be automatically checked using the <code>expect</code> option.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">var</span> <span class="nx">expect</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">expect</span> <span class="o">||</span> <span class="p">{};</span>
+    <span class="k">delete</span> <span class="nx">options</span><span class="p">.</span><span class="nx">expect</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="nx">options</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">checkResponse</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">expect</span><span class="p">));</span>
+  <span class="p">},</span>
+
+  <span class="nx">checkResponse</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">expected</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">checkStatusCode</span><span class="p">(</span><span class="nx">expected</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">,</span> <span class="nx">response</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
+  <span class="p">},</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-10" id="section-10">&#182;</a>
+</div>
+<p>Check the status code by adding a <code>statusCode</code> to the <code>expect</code> option.</p>
+
+
+<div class="highlight"><pre><code><span class="nx">scenario</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="s1">&#39;a step checking the response&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">({</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;http://example.com&#39;</span><span class="p">,</span>
+    <span class="nx">expect</span><span class="o">:</span> <span class="p">{</span>
+      <span class="c1">// the scenario will be interrupted if the</span>
+      <span class="c1">// response has a different status code than 200</span>
+      <span class="nx">statusCode</span><span class="o">:</span> <span class="mi">200</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>
+
+
+
+<p>Check a range of codes with a regular expression:</p>
+
+
+<div class="highlight"><pre><code><span class="nx">scenario</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="s1">&#39;another check&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">({</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;http://example.com&#39;</span><span class="p">,</span>
+    <span class="nx">expect</span><span class="o">:</span> <span class="p">{</span>
+      <span class="c1">// the scenario will be interrupted if the</span>
+      <span class="c1">// response has a status code not in the 2xx range</span>
+      <span class="nx">statusCode</span><span class="o">:</span> <span class="sr">/^2/</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>
+
+
+
+<p>You can also use an array of expected status codes.</p>
+
+
+<div class="highlight"><pre><code><span class="nx">scenario</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="s1">&#39;yet another check&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">({</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;http://example.com&#39;</span><span class="p">,</span>
+    <span class="nx">expect</span><span class="o">:</span> <span class="p">{</span>
+      <span class="c1">// the scenario will be interrupted if the</span>
+      <span class="c1">// response has a status code not among these</span>
+      <span class="nx">statusCode</span><span class="o">:</span> <span class="p">[</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">,</span> <span class="sr">/^3/</span> <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>
+
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="nx">checkStatusCode</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">expected</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">expected</span> <span class="o">||</span> <span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">expected</span><span class="p">)</span> <span class="o">?</span> <span class="nx">expected</span> <span class="o">:</span> <span class="p">[</span> <span class="nx">expected</span> <span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">statusCode</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isRegExp</span><span class="p">(</span><span class="nx">statusCode</span><span class="p">)</span> <span class="o">?</span> <span class="nx">statusCode</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">)</span> <span class="o">:</span> <span class="nx">statusCode</span> <span class="o">===</span> <span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">;</span>
+    <span class="p">}))</span> <span class="p">{</span>
+      <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">var</span> <span class="nx">description</span> <span class="o">=</span> <span class="nx">expected</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">expected</span><span class="p">))</span> <span class="p">{</span>
+      <span class="nx">description</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="nx">expected</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">memo</span><span class="p">,</span> <span class="nx">s</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">memo</span> <span class="o">+</span> <span class="p">(</span><span class="nx">i</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">?</span> <span class="s1">&#39;&#39;</span> <span class="o">:</span> <span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nx">s</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+      <span class="p">},</span> <span class="s1">&#39;in [&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Expected server to respond with status code &#39;</span> <span class="o">+</span> <span class="nx">description</span> <span class="o">+</span> <span class="s1">&#39;; got &#39;</span> <span class="o">+</span> <span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">);</span>
   <span class="p">},</span>
 
 
@@ -247,7 +355,9 @@ See <a href="#method-addRequestFilter">#addRequestFilter</a>.</p>
 All further requests will use these options by default.</p>
 
 
-<div class="highlight"><pre><code><span class="k">this</span><span class="p">.</span><span class="nx">setDefaultRequestOptions</span><span class="p">({</span> <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span> <span class="p">});</span>
+<div class="highlight"><pre><code><span class="k">this</span><span class="p">.</span><span class="nx">setDefaultRequestOptions</span><span class="p">({</span>
+  <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span>
+<span class="p">});</span>
 </code></pre></div>
 
 
@@ -255,6 +365,7 @@ All further requests will use these options by default.</p>
         <td class="code highlight"><div class="highlight"><pre>
   <span class="nx">setDefaultRequestOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span> <span class="o">=</span> <span class="nx">options</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">cleanRequestOptions</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span><span class="p">);</span>
   <span class="p">},</span>
 
 
@@ -276,18 +387,71 @@ All further requests will use these options by default.</p>
 <p>Extends the default request options with the specified additional options.</p>
 
 
-<div class="highlight"><pre><code><span class="k">this</span><span class="p">.</span><span class="nx">setDefaultRequestOptions</span><span class="p">({</span> <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span> <span class="p">});</span>
-<span class="k">this</span><span class="p">.</span><span class="nx">extendDefaultRequestOptions</span><span class="p">({</span> <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span> <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="s1">&#39;application/json&#39;</span> <span class="p">}</span> <span class="p">});</span>
-<span class="c1">// default options will be { json: true, headers: { &#39;Accept&#39;: &#39;application/json&#39; } }</span>
+<div class="highlight"><pre><code><span class="k">this</span><span class="p">.</span><span class="nx">setDefaultRequestOptions</span><span class="p">({</span>
+  <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span>
+<span class="p">});</span>
+
+<span class="k">this</span><span class="p">.</span><span class="nx">extendDefaultRequestOptions</span><span class="p">({</span>
+  <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span> <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="s1">&#39;application/json&#39;</span> <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="c1">// default options will be {</span>
+<span class="c1">//   json: true,</span>
+<span class="c1">//   headers: { &#39;Accept&#39;: &#39;application/json&#39; }</span>
+<span class="c1">// }</span>
 </code></pre></div>
 
 
         </td>
         <td class="code highlight"><div class="highlight"><pre>
   <span class="nx">extendDefaultRequestOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">cleanRequestOptions</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span><span class="p">);</span>
+  <span class="p">},</span>
 
-    <span class="kd">var</span> <span class="nx">newDefaultRequestOptions</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="nx">newDefaultRequestOptions</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">memo</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><p><a name="method-mergeDefaultRequestOptions"></a></p>
+
+
+<div class="pilwrap" id="%23mergedefaultrequestoptions(options)">
+  <h3>
+    <a href="#%23mergedefaultrequestoptions(options)" name="%23mergedefaultrequestoptions(options)" class="pilcrow">&#182;</a>
+    #mergeDefaultRequestOptions(options)
+  </h3>
+</div>
+
+
+<p>Merges additional options into the default request options.
+This is done with the <a href="https://github.com/nrf110/deepmerge">deepmerge</a> library.</p>
+
+
+<div class="highlight"><pre><code><span class="k">this</span><span class="p">.</span><span class="nx">setDefaultRequestOptions</span><span class="p">({</span>
+  <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span> <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="s1">&#39;application/json&#39;</span> <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="k">this</span><span class="p">.</span><span class="nx">mergeDefaultRequestOptions</span><span class="p">({</span>
+  <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span> <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="s1">&#39;application/json&#39;</span> <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="c1">// default options will be {</span>
+<span class="c1">//   headers: {</span>
+<span class="c1">//     &#39;Content-Type&#39;: &#39;application/json&#39;,</span>
+<span class="c1">//     &#39;Accept&#39;: &#39;application/json&#39;</span>
+<span class="c1">//   }</span>
+<span class="c1">// }</span>
+</code></pre></div>
+
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="nx">mergeDefaultRequestOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span> <span class="o">=</span> <span class="nx">merge</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">cleanRequestOptions</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">defaultRequestOptions</span><span class="p">);</span>
+  <span class="p">},</span>
 
 
 </pre></div>
@@ -296,17 +460,41 @@ All further requests will use these options by default.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-11" id="section-11">&#182;</a>
+  <a class="pilcrow" href="#section-14" id="section-14">&#182;</a>
 </div>
-<p>Set an option to undefined to clear it.</p>
+<p>With both <code>extendDefaultRequestOptions</code> and <code>mergeDefaultRequestOptions</code>,
+setting an option to <code>undefined</code> removes it.</p>
+
+
+<div class="highlight"><pre><code><span class="k">this</span><span class="p">.</span><span class="nx">setDefaultRequestOptions</span><span class="p">({</span>
+  <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span> <span class="nx">foo</span><span class="o">:</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="nx">bar</span><span class="o">:</span> <span class="s1">&#39;baz&#39;</span> <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="k">this</span><span class="p">.</span><span class="nx">extendDefaultRequestOptions</span><span class="p">({</span>
+  <span class="nx">json</span><span class="o">:</span> <span class="kc">undefined</span>
+<span class="p">});</span>
+
+<span class="k">this</span><span class="p">.</span><span class="nx">mergeDefaultRequestOptions</span><span class="p">({</span>
+  <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span> <span class="nx">foo</span><span class="o">:</span> <span class="kc">undefined</span> <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="c1">// default request options are now {</span>
+<span class="c1">//   headers: { bar: &#39;baz&#39; }</span>
+<span class="c1">// }</span>
+</code></pre></div>
+
+
         </td>
         <td class="code highlight"><div class="highlight"><pre>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">value</span> <span class="o">!==</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">memo</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+  <span class="nx">cleanRequestOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">value</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">delete</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">cleanRequestOptions</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
       <span class="p">}</span>
-
-      <span class="k">return</span> <span class="nx">memo</span><span class="p">;</span>
-    <span class="p">},</span> <span class="p">{});</span>
+    <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
   <span class="p">},</span>
 
 
@@ -345,7 +533,7 @@ All further requests will use these options by default.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-13" id="section-13">&#182;</a>
+  <a class="pilcrow" href="#section-16" id="section-16">&#182;</a>
 </div>
 <p>Call this method with no arguments to clear all options.</p>
         </td>
@@ -400,7 +588,7 @@ to return the processed options.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-15" id="section-15">&#182;</a>
+  <a class="pilcrow" href="#section-18" id="section-18">&#182;</a>
 </div>
 <p>Call this method with only a filter function to define an unnamed filter.</p>
 
@@ -463,7 +651,7 @@ or filter functions.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-17" id="section-17">&#182;</a>
+  <a class="pilcrow" href="#section-20" id="section-20">&#182;</a>
 </div>
 <p>Call this method with no arguments to remove all filters.</p>
         </td>
