@@ -316,14 +316,78 @@ See <a href="#method-addRequestFilter">#addRequestFilter</a>.</p>
 </code></pre></div>
 
 
+
+<p>To specify a custom error message, pass an object with the expected
+value as the <code>value</code> option, and the message as the <code>message</code> option:</p>
+
+
+<div class="highlight"><pre><code><span class="nx">scenario</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="s1">&#39;custom message&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">({</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;http://example.com&#39;</span><span class="p">,</span>
+    <span class="nx">expect</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">statusCode</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">value</span><span class="o">:</span> <span class="sr">/^2/</span><span class="p">,</span>
+        <span class="nx">message</span><span class="o">:</span> <span class="s1">&#39;Must be in the 2xx range.&#39;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>
+
+
+
+<p>To build an error message from the expected and actual values,
+pass a function as the <code>message</code> option:</p>
+
+
+<div class="highlight"><pre><code><span class="nx">scenario</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="s1">&#39;message function&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">({</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;http://example.com&#39;</span><span class="p">,</span>
+    <span class="nx">expect</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">statusCode</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">value</span><span class="o">:</span> <span class="p">[</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">,</span> <span class="mi">204</span> <span class="p">],</span>
+        <span class="nx">message</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">expected</span><span class="p">,</span> <span class="nx">actual</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="s2">&quot;Expected &quot;</span> <span class="o">+</span> <span class="nx">actual</span> <span class="o">+</span> <span class="s2">&quot; to be in &quot;</span> <span class="o">+</span> <span class="nx">expected</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>
+
+
         </td>
         <td class="code highlight"><div class="highlight"><pre>
   <span class="nx">checkStatusCode</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">expected</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">expected</span> <span class="o">||</span> <span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">expected</span><span class="p">)</span> <span class="o">?</span> <span class="nx">expected</span> <span class="o">:</span> <span class="p">[</span> <span class="nx">expected</span> <span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">statusCode</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="nx">expected</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">expected</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">expected</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="o">?</span> <span class="nx">expected</span> <span class="o">:</span> <span class="p">{</span> <span class="nx">value</span><span class="o">:</span> <span class="nx">expected</span> <span class="p">};</span>
+
+    <span class="kd">var</span> <span class="nx">expectedValues</span> <span class="o">=</span> <span class="nx">expected</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">expectedValues</span> <span class="o">||</span> <span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">expectedValues</span><span class="p">)</span> <span class="o">?</span> <span class="nx">expectedValues</span> <span class="o">:</span> <span class="p">[</span> <span class="nx">expectedValues</span> <span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">statusCode</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isRegExp</span><span class="p">(</span><span class="nx">statusCode</span><span class="p">)</span> <span class="o">?</span> <span class="nx">statusCode</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">)</span> <span class="o">:</span> <span class="nx">statusCode</span> <span class="o">===</span> <span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">;</span>
     <span class="p">}))</span> <span class="p">{</span>
       <span class="k">return</span><span class="p">;</span>
     <span class="p">}</span>
+
+    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">statusCodeErrorMessage</span><span class="p">(</span><span class="nx">expected</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span> <span class="nx">expectedValues</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">));</span>
+  <span class="p">},</span>
+
+  <span class="nx">statusCodeErrorMessage</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">,</span> <span class="nx">expected</span><span class="p">,</span> <span class="nx">actual</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">message</span><span class="p">(</span><span class="nx">expected</span><span class="p">,</span> <span class="nx">actual</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">message</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="s1">&#39;Expected server to respond with status code &#39;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">statusCodeDescription</span><span class="p">(</span><span class="nx">expected</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;; got &#39;</span> <span class="o">+</span> <span class="nx">actual</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+
+  <span class="nx">statusCodeDescription</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">expected</span><span class="p">)</span> <span class="p">{</span>
 
     <span class="kd">var</span> <span class="nx">description</span> <span class="o">=</span> <span class="nx">expected</span><span class="p">;</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">expected</span><span class="p">))</span> <span class="p">{</span>
@@ -332,7 +396,7 @@ See <a href="#method-addRequestFilter">#addRequestFilter</a>.</p>
       <span class="p">},</span> <span class="s1">&#39;in [&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Expected server to respond with status code &#39;</span> <span class="o">+</span> <span class="nx">description</span> <span class="o">+</span> <span class="s1">&#39;; got &#39;</span> <span class="o">+</span> <span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">description</span><span class="p">;</span>
   <span class="p">},</span>
 
 

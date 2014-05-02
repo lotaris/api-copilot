@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>scenario.params.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="doc-style.css" />
+  <script src="doc-filelist.js"></script>
+  <script>
+    var relativeDir = "", thisFile = "Users/unknow/Projects/lotaris/api-copilot//scenario.params.js", defaultSidebar = true;
+  </script>
+  <script src="doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h2">
+        <a href="#runtime%20parameters%20methods">Runtime Parameters Methods</a>
+      </div>
+      <div class="heading h3">
+        <a href="#%23param(name%2C%20options)">#param(name, options)</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+          <h1>scenario.params.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1">&#182;</a>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;underscore&#39;</span><span class="p">),</span>
+    <span class="nx">merge</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;deepmerge&#39;</span><span class="p">),</span>
+    <span class="nx">q</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">);</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">deps</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="nx">deps</span> <span class="o">=</span> <span class="nx">deps</span> <span class="o">||</span> <span class="p">{};</span>
+  <span class="kd">var</span> <span class="nx">parameterFactory</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">parameterFactory</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./factory&#39;</span><span class="p">)(</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./parameter&#39;</span><span class="p">)()),</span>
+      <span class="nx">print</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">print</span> <span class="o">||</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="runtime%20parameters%20methods">
+  <h2>
+    <a href="#runtime%20parameters%20methods" name="runtime%20parameters%20methods" class="pilcrow">&#182;</a>
+    Runtime Parameters Methods
+  </h2>
+</div>
+
+
+<p>Parameters can be passed as the <code>params</code> option to the constructor
+or to the <code>#run</code> method. The latter will always override the former.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="k">return</span> <span class="p">{</span>
+
+    <span class="nx">addParam</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">name</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Parameter name must be a string&#39;</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">findWhere</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">parameters</span><span class="p">,</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="nx">name</span> <span class="p">}))</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;The parameter &quot;&#39;</span> <span class="o">+</span> <span class="nx">name</span> <span class="o">+</span> <span class="s1">&#39;&quot; is already defined&#39;</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="kd">var</span> <span class="nx">param</span> <span class="o">=</span> <span class="nx">parameterFactory</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">parameters</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">param</span><span class="p">);</span>
+
+      <span class="k">return</span> <span class="nx">param</span><span class="p">;</span>
+    <span class="p">},</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><p><a name="method-param"></a></p>
+
+
+<div class="pilwrap" id="%23param(name%2C%20options)">
+  <h3>
+    <a href="#%23param(name%2C%20options)" name="%23param(name%2C%20options)" class="pilcrow">&#182;</a>
+    #param(name, options)
+  </h3>
+</div>
+
+
+<p>Returns the value of the parameter with the specified name.</p>
+
+
+<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">scenario</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Scenario</span><span class="p">({</span>
+  <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;once upon a time&#39;</span><span class="p">,</span>
+  <span class="nx">params</span><span class="o">:</span> <span class="p">{</span> <span class="nx">foo</span><span class="o">:</span> <span class="s1">&#39;bar&#39;</span> <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">scenario</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="s1">&#39;a step&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">param</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">);</span> <span class="c1">// &quot;bar&quot;</span>
+<span class="p">});</span>
+</code></pre></div>
+
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="nx">param</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_</span><span class="p">.</span><span class="nx">findWhere</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">parameters</span><span class="p">,</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="nx">name</span> <span class="p">}))</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Unknown parameter &quot;&#39;</span> <span class="o">+</span> <span class="nx">name</span> <span class="o">+</span> <span class="s1">&#39;&quot;; add it to the Scenario object with the `addParam` method&#39;</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">parameterValues</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span>
+    <span class="p">},</span>
+
+    <span class="nx">loadParametersWith</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">loader</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="nx">loader</span><span class="p">)</span> <span class="o">!==</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Parameter loader must be a function&#39;</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">parameterLoaders</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">loader</span><span class="p">);</span>
+    <span class="p">},</span>
+
+    <span class="nx">processParameters</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">runOptions</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">q</span><span class="p">.</span><span class="nx">fcall</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">loadParameters</span><span class="p">,</span> <span class="k">this</span><span class="p">),</span> <span class="nx">runOptions</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">ensureParameters</span><span class="p">,</span> <span class="k">this</span><span class="p">));</span>
+    <span class="p">},</span>
+
+    <span class="nx">loadParameters</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">runOptions</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">parameterValues</span> <span class="o">=</span> <span class="nx">merge</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">baseOptions</span><span class="p">.</span><span class="nx">params</span> <span class="o">||</span> <span class="p">{},</span> <span class="nx">runOptions</span><span class="p">.</span><span class="nx">params</span> <span class="o">||</span> <span class="p">{});</span>
+
+      <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">q</span><span class="p">(</span><span class="nx">parameterValues</span><span class="p">);</span>
+
+      <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">parameterLoaders</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">loader</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">promise</span> <span class="o">=</span> <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">loader</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">ensureParameterValues</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">i</span><span class="p">));</span>
+      <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
+
+      <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">parameterValues</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">parameterValues</span> <span class="o">=</span> <span class="nx">parameterValues</span><span class="p">;</span>
+        <span class="k">return</span> <span class="nx">runOptions</span><span class="p">;</span>
+      <span class="p">},</span> <span class="k">this</span><span class="p">));</span>
+
+      <span class="k">return</span> <span class="nx">promise</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">ensureParameterValues</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">loaderIndex</span><span class="p">,</span> <span class="nx">parameterValues</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">parameterValues</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Parameter loading function at index &#39;</span> <span class="o">+</span> <span class="nx">loaderIndex</span> <span class="o">+</span> <span class="s1">&#39; returned nothing; it must return the updated runtime parameters&#39;</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">parameterValues</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Expected parameter loading function at index &#39;</span> <span class="o">+</span> <span class="nx">loaderIndex</span> <span class="o">+</span> <span class="s1">&#39; to return updated runtime parameters as an object, got &#39;</span> <span class="o">+</span> <span class="k">typeof</span><span class="p">(</span><span class="nx">parameterValues</span><span class="p">));</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="nx">parameterValues</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">ensureParameters</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">runOptions</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">parameterValues</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">param</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+      <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
+
+      <span class="kd">var</span> <span class="nx">invalidParameters</span> <span class="o">=</span> <span class="p">[];</span>
+
+      <span class="kd">var</span> <span class="nx">errors</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">parameters</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">memo</span><span class="p">,</span> <span class="nx">param</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">param</span><span class="p">.</span><span class="nx">validate</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">parameterValues</span><span class="p">[</span><span class="nx">param</span><span class="p">.</span><span class="nx">name</span><span class="p">],</span> <span class="nx">memo</span><span class="p">))</span> <span class="p">{</span>
+          <span class="nx">invalidParameters</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">param</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">memo</span><span class="p">;</span>
+      <span class="p">},</span> <span class="p">[],</span> <span class="k">this</span><span class="p">);</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">errors</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">q</span><span class="p">();</span>
+      <span class="p">}</span>
+
+      <span class="nx">print</span><span class="p">();</span>
+      <span class="nx">print</span><span class="p">(</span><span class="s1">&#39;The scenario cannot be run because the following parameters are either missing or invalid:&#39;</span><span class="p">.</span><span class="nx">yellow</span><span class="p">);</span>
+      <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">errors</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">print</span><span class="p">(</span><span class="s1">&#39;- &#39;</span> <span class="o">+</span> <span class="nx">error</span><span class="p">);</span>
+      <span class="p">});</span>
+
+      <span class="nx">print</span><span class="p">();</span>
+      <span class="nx">print</span><span class="p">(</span><span class="s1">&#39;You will now be asked for the missing or corrected values.&#39;</span><span class="p">.</span><span class="nx">green</span><span class="p">);</span>
+      <span class="nx">print</span><span class="p">(</span><span class="s1">&#39;Press Ctrl-C to quit.&#39;</span><span class="p">.</span><span class="nx">green</span><span class="p">);</span>
+
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">fixInvalidParameters</span><span class="p">(</span><span class="nx">invalidParameters</span><span class="p">);</span>
+    <span class="p">},</span>
+
+    <span class="nx">fixInvalidParameters</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">invalidParameters</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">q</span><span class="p">();</span>
+      <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">invalidParameters</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">promise</span> <span class="o">=</span> <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">param</span><span class="p">.</span><span class="nx">prompt</span><span class="p">,</span> <span class="nx">param</span><span class="p">)).</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">setFixedParameter</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">param</span><span class="p">));</span>
+      <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
+
+      <span class="k">return</span> <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;\n&quot;</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+
+    <span class="nx">setFixedParameter</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">newValue</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">parameterValues</span><span class="p">[</span><span class="nx">param</span><span class="p">.</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">newValue</span><span class="p">;</span>
+      <span class="nx">print</span><span class="p">((</span><span class="s1">&#39;Parameter &#39;</span> <span class="o">+</span> <span class="nx">param</span><span class="p">.</span><span class="nx">name</span><span class="p">.</span><span class="nx">bold</span> <span class="o">+</span> <span class="s1">&#39; set to:&#39;</span><span class="p">).</span><span class="nx">green</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nx">newValue</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+<span class="p">};</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

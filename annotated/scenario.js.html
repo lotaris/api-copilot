@@ -58,19 +58,13 @@
         <a href="#%23complete()">#complete()</a>
       </div>
       <div class="heading h2">
-        <a href="#runtime%20parameters%20methods">Runtime Parameters Methods</a>
-      </div>
-      <div class="heading h3">
-        <a href="#%23param(name%2C%20options)">#param(name, options)</a>
-      </div>
-      <div class="heading h3">
-        <a href="#%23requireparameters(names...)">#requireParameters(names...)</a>
-      </div>
-      <div class="heading h2">
         <a href="#utility%20methods">Utility Methods</a>
       </div>
       <div class="heading h3">
         <a href="#%23defer()">#defer()</a>
+      </div>
+      <div class="heading h3">
+        <a href="#%23all(promises...)">#all(promises...)</a>
       </div>
       <div class="heading h2">
         <a href="#internals">Internals</a>
@@ -86,9 +80,6 @@
       </div>
       <div class="heading h3">
         <a href="#%23getnextstep()">#getNextStep()</a>
-      </div>
-      <div class="heading h3">
-        <a href="#%23ensureparameters()">#ensureParameters()</a>
       </div>
       <div class="heading h2">
         <a href="#run%20algorithm">Run Algorithm</a>
@@ -245,7 +236,8 @@ Call the function with no arguments to get the Scenario class with its real depe
 
   <span class="nx">deps</span> <span class="o">=</span> <span class="nx">deps</span> <span class="o">||</span> <span class="p">{};</span>
   <span class="kd">var</span> <span class="nx">log4js</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">log4js</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;log4js&#39;</span><span class="p">),</span>
-      <span class="nx">Client</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">Client</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./client&#39;</span><span class="p">)();</span>
+      <span class="nx">print</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">print</span> <span class="o">||</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">,</span>
+      <span class="nx">Client</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">Client</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./client&#39;</span><span class="p">)(),</span>
 
 
 </pre></div>
@@ -259,7 +251,21 @@ Call the function with no arguments to get the Scenario class with its real depe
 <p>Functionality related to HTTP calls is contained in <a href="scenario.client.js.html">scenario.client.js</a>.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
-  <span class="kd">var</span> <span class="nx">ScenarioClientExtensions</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./scenario.client&#39;</span><span class="p">);</span>
+      <span class="nx">ScenarioClientExtensions</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./scenario.client&#39;</span><span class="p">),</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6">&#182;</a>
+</div>
+<p>Functionality related to runtime parameters is contained in <a href="scenario.params.js.html">scenario.params.js</a>.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="nx">ScenarioParameterExtensions</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./scenario.params&#39;</span><span class="p">)(</span><span class="nx">deps</span><span class="p">);</span>
 
 
 </pre></div>
@@ -300,12 +306,14 @@ Call the function with no arguments to get the Scenario class with its real depe
     <span class="p">}</span>
 
     <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">name</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">summary</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">summary</span><span class="p">;</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">logger</span> <span class="o">=</span> <span class="nx">log4js</span><span class="p">.</span><span class="nx">getLogger</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
 
     <span class="k">this</span><span class="p">.</span><span class="nx">baseOptions</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span> <span class="nx">options</span><span class="p">);</span>
 
-    <span class="k">this</span><span class="p">.</span><span class="nx">params</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">baseOptions</span><span class="p">.</span><span class="nx">params</span> <span class="o">||</span> <span class="p">{};</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">requiredParameters</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">parameters</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">parameterLoaders</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">parameterValues</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">baseOptions</span><span class="p">.</span><span class="nx">params</span> <span class="o">||</span> <span class="p">{};</span>
 
     <span class="k">this</span><span class="p">.</span><span class="nx">steps</span> <span class="o">=</span> <span class="p">[];</span>
 
@@ -319,7 +327,7 @@ Call the function with no arguments to get the Scenario class with its real depe
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-7" id="section-7">&#182;</a>
+  <a class="pilcrow" href="#section-8" id="section-8">&#182;</a>
 </div>
 <p>Most of these options are not handled by the scenario object itself.
 The <code>configure</code> event is emitted with all the options when the scenario is
@@ -370,7 +378,7 @@ by the scenario object itself, with the <code>client:</code> prefix:</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-9" id="section-9">&#182;</a>
+  <a class="pilcrow" href="#section-10" id="section-10">&#182;</a>
 </div>
 <p>A scenario is an <a href="http://nodejs.org/api/events.html">event emitter</a>.</p>
         </td>
@@ -647,120 +655,6 @@ Further steps will not be executed and the scenario will complete successfully.<
       </tr>
       <tr>
         <td class="docs">
-<div class="pilwrap" id="runtime%20parameters%20methods">
-  <h2>
-    <a href="#runtime%20parameters%20methods" name="runtime%20parameters%20methods" class="pilcrow">&#182;</a>
-    Runtime Parameters Methods
-  </h2>
-</div>
-
-
-<p>Parameters can be passed as the <code>params</code> option to the constructor
-or to the <code>#run</code> method. The latter will always override the former.</p>
-        </td>
-        <td class="code highlight"><div class="highlight"><pre>
-
-
-</pre></div>
-        </td>
-      </tr>
-      <tr>
-        <td class="docs"><p><a name="method-param"></a></p>
-
-
-<div class="pilwrap" id="%23param(name%2C%20options)">
-  <h3>
-    <a href="#%23param(name%2C%20options)" name="%23param(name%2C%20options)" class="pilcrow">&#182;</a>
-    #param(name, options)
-  </h3>
-</div>
-
-
-<p>Returns the value of the parameter with the specified name.</p>
-
-
-<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">scenario</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Scenario</span><span class="p">({</span>
-  <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;once upon a time&#39;</span><span class="p">,</span>
-  <span class="nx">params</span><span class="o">:</span> <span class="p">{</span> <span class="nx">foo</span><span class="o">:</span> <span class="s1">&#39;bar&#39;</span> <span class="p">}</span>
-<span class="p">});</span>
-
-<span class="nx">scenario</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="s1">&#39;a step&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">param</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">);</span> <span class="c1">// &quot;bar&quot;</span>
-<span class="p">});</span>
-</code></pre></div>
-
-
-
-<p>By default, throws an error if the parameter was not found.
-Set the <code>required</code> option to false to disable this behavior.</p>
-
-
-<div class="highlight"><pre><code><span class="nx">scenario</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="s1">&#39;another step&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">param</span><span class="p">(</span><span class="s1">&#39;unknown&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">required</span><span class="o">:</span> <span class="kc">false</span> <span class="p">});</span> <span class="c1">// undefined</span>
-<span class="p">});</span>
-</code></pre></div>
-
-
-        </td>
-        <td class="code highlight"><div class="highlight"><pre>
-    <span class="nx">param</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">options</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
-        <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-        <span class="nx">message</span><span class="o">:</span> <span class="s1">&#39;Unknown parameter &quot;&#39;</span> <span class="o">+</span> <span class="nx">name</span> <span class="o">+</span> <span class="s1">&#39;&quot;; give it to the Scenario object at construction or from the command line with the -p, --params option&#39;</span>
-      <span class="p">},</span> <span class="nx">options</span><span class="p">);</span>
-
-      <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">required</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">_</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="nx">name</span><span class="p">))</span> <span class="p">{</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
-      <span class="p">}</span>
-
-      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span>
-    <span class="p">},</span>
-
-
-</pre></div>
-        </td>
-      </tr>
-      <tr>
-        <td class="docs"><p><a name="method-requireParameters"></a></p>
-
-
-<div class="pilwrap" id="%23requireparameters(names...)">
-  <h3>
-    <a href="#%23requireparameters(names...)" name="%23requireparameters(names...)" class="pilcrow">&#182;</a>
-    #requireParameters(names...)
-  </h3>
-</div>
-
-
-<p>Marks parameters as required.</p>
-
-<p>Use this method before defining steps to require that some parameters
-be specified to run this scenario. If they are not available when running
-an error will be thrown.</p>
-
-
-<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">scenario</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Scenario</span><span class="p">({</span>
-  <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;once upon a time&#39;</span>
-<span class="p">});</span>
-
-<span class="nx">scenario</span><span class="p">.</span><span class="nx">requireParameters</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">);</span>
-</code></pre></div>
-
-
-        </td>
-        <td class="code highlight"><div class="highlight"><pre>
-    <span class="nx">requireParameters</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
-      <span class="nx">args</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">args</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">requiredParameters</span><span class="p">.</span><span class="nx">splice</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">requiredParameters</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
-    <span class="p">},</span>
-
-
-</pre></div>
-        </td>
-      </tr>
-      <tr>
-        <td class="docs">
 <div class="pilwrap" id="utility%20methods">
   <h2>
     <a href="#utility%20methods" name="utility%20methods" class="pilcrow">&#182;</a>
@@ -794,6 +688,30 @@ an error will be thrown.</p>
         <td class="code highlight"><div class="highlight"><pre>
     <span class="nx">defer</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
       <span class="k">return</span> <span class="nx">q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
+    <span class="p">},</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><p><a name="method-all"></a></p>
+
+
+<div class="pilwrap" id="%23all(promises...)">
+  <h3>
+    <a href="#%23all(promises...)" name="%23all(promises...)" class="pilcrow">&#182;</a>
+    #all(promises...)
+  </h3>
+</div>
+
+
+<p>Returns a promise for an array of promises.
+See <a href="https://github.com/kriskowal/q#combination">q combinations</a>.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="nx">all</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">q</span><span class="p">.</span><span class="nx">all</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">q</span><span class="p">,</span> <span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">));</span>
     <span class="p">},</span>
 
 
@@ -927,35 +845,6 @@ defined after the current one.</p>
       </tr>
       <tr>
         <td class="docs">
-<div class="pilwrap" id="%23ensureparameters()">
-  <h3>
-    <a href="#%23ensureparameters()" name="%23ensureparameters()" class="pilcrow">&#182;</a>
-    #ensureParameters()
-  </h3>
-</div>
-
-
-<p>Throws an error if any of the required parameters specified with <code>#requireParameters</code>
-were not specified.</p>
-        </td>
-        <td class="code highlight"><div class="highlight"><pre>
-    <span class="nx">ensureParameters</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-
-      <span class="kd">var</span> <span class="nx">missing</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">requiredParameters</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="nx">name</span><span class="p">);</span>
-      <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
-
-      <span class="k">if</span> <span class="p">(</span><span class="nx">missing</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;The following required parameters are missing: &#39;</span> <span class="o">+</span> <span class="nx">missing</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">));</span>
-      <span class="p">}</span>
-    <span class="p">},</span>
-
-
-</pre></div>
-        </td>
-      </tr>
-      <tr>
-        <td class="docs">
 <div class="pilwrap" id="run%20algorithm">
   <h2>
     <a href="#run%20algorithm" name="run%20algorithm" class="pilcrow">&#182;</a>
@@ -1000,7 +889,7 @@ if any step fails and it was interrupted.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-30" id="section-30">&#182;</a>
+  <a class="pilcrow" href="#section-28" id="section-28">&#182;</a>
 </div>
 <p>An error is thrown if no steps are defined.</p>
         </td>
@@ -1018,11 +907,11 @@ if any step fails and it was interrupted.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-31" id="section-31">&#182;</a>
+  <a class="pilcrow" href="#section-29" id="section-29">&#182;</a>
 </div>
 <p>Run options are built by overriding construction options
 with runtime options. Runtime options come from the command line and/or
-configuration file; they are handled by <a href="cli.command.js.html">cli.command.js</a>.</p>
+configuration file; they are handled in <a href="cli.command.js.html">cli.command.js</a>.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
       <span class="kd">var</span> <span class="nx">runOptions</span> <span class="o">=</span> <span class="nx">merge</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">baseOptions</span><span class="p">,</span> <span class="nx">options</span> <span class="o">||</span> <span class="p">{});</span>
@@ -1034,13 +923,16 @@ configuration file; they are handled by <a href="cli.command.js.html">cli.comman
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-32" id="section-32">&#182;</a>
+  <a class="pilcrow" href="#section-30" id="section-30">&#182;</a>
 </div>
-<p>Required parameters are checked before starting to run.</p>
+<p>Runtime parameters are loaded and validated before actually running the scenario.
+This is handled in <a href="scenario.params.js.html">scenario.params.js</a>.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
-      <span class="k">this</span><span class="p">.</span><span class="nx">params</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">runOptions</span><span class="p">.</span><span class="nx">params</span> <span class="o">||</span> <span class="p">{});</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">ensureParameters</span><span class="p">();</span>
+      <span class="k">return</span> <span class="nx">q</span><span class="p">.</span><span class="nx">fcall</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">processParameters</span><span class="p">,</span> <span class="k">this</span><span class="p">),</span> <span class="nx">runOptions</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">runScenario</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">runOptions</span><span class="p">));</span>
+    <span class="p">},</span>
+
+    <span class="nx">runScenario</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">runOptions</span><span class="p">)</span> <span class="p">{</span>
 
 
 </pre></div>
@@ -1049,7 +941,7 @@ configuration file; they are handled by <a href="cli.command.js.html">cli.comman
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-33" id="section-33">&#182;</a>
+  <a class="pilcrow" href="#section-31" id="section-31">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>configure</code> event is emitted with the run options before the scenario starts.
 Components listening to this event should update their configuration.</p>
@@ -1064,7 +956,7 @@ Components listening to this event should update their configuration.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-34" id="section-34">&#182;</a>
+  <a class="pilcrow" href="#section-32" id="section-32">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>scenario:start</code> event is emitted with the run options when the scenario starts.</p>
         </td>
@@ -1080,7 +972,7 @@ Components listening to this event should update their configuration.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-35" id="section-35">&#182;</a>
+  <a class="pilcrow" href="#section-33" id="section-33">&#182;</a>
 </div>
 <p>The scenario always starts with the first step.</p>
         </td>
@@ -1094,7 +986,7 @@ Components listening to this event should update their configuration.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-36" id="section-36">&#182;</a>
+  <a class="pilcrow" href="#section-34" id="section-34">&#182;</a>
 </div>
 <p>The returned promise will be resolved when the last step of the scenario
 is done executing, or if a step fails and the scenario is interrupted.</p>
@@ -1138,7 +1030,7 @@ to complete the scenario.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-38" id="section-38">&#182;</a>
+  <a class="pilcrow" href="#section-36" id="section-36">&#182;</a>
 </div>
 <p>The step description object is passed to all step events; it contains
 the name of the step that is being executed.</p>
@@ -1154,7 +1046,7 @@ the name of the step that is being executed.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-39" id="section-39">&#182;</a>
+  <a class="pilcrow" href="#section-37" id="section-37">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>step:start</code> event is emitted before each step starts executing
 with the step description object and the step arguments.</p>
@@ -1169,7 +1061,7 @@ with the step description object and the step arguments.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-40" id="section-40">&#182;</a>
+  <a class="pilcrow" href="#section-38" id="section-38">&#182;</a>
 </div>
 <p>The step definition function is called with this scenario as the context
 and with the step arguments. This is done with the q library so a promise
@@ -1185,7 +1077,7 @@ is returned and any errors are handled by the promise chain.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-41" id="section-41">&#182;</a>
+  <a class="pilcrow" href="#section-39" id="section-39">&#182;</a>
 </div>
 <p><code>#handleStepResult</code>  is called if the promise is resolved, <code>#handleStepError</code> otherwise.</p>
         </td>
@@ -1219,7 +1111,7 @@ is returned and any errors are handled by the promise chain.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-43" id="section-43">&#182;</a>
+  <a class="pilcrow" href="#section-41" id="section-41">&#182;</a>
 </div>
 <p>The results from the previous steps are given as additional arguments to this method.
 If the result is a single <code>StepArgs</code> object (such as returned by <code>#success</code>),
@@ -1241,7 +1133,7 @@ a promise can only be resolved with one value.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-44" id="section-44">&#182;</a>
+  <a class="pilcrow" href="#section-42" id="section-42">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>step:skip</code> event is emitted if the step was skipped.
 The first argument is the step description object, the second argument
@@ -1258,7 +1150,7 @@ passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-45" id="section-45">&#182;</a>
+  <a class="pilcrow" href="#section-43" id="section-43">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>step:done</code> event is emitted otherwise.
 The first argument is the step description object, and remaining arguments
@@ -1277,7 +1169,7 @@ are the results that will be passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-46" id="section-46">&#182;</a>
+  <a class="pilcrow" href="#section-44" id="section-44">&#182;</a>
 </div>
 <p>The scenario is stopped if there are no more steps to run or if it was marked as completed.</p>
         </td>
@@ -1291,7 +1183,7 @@ are the results that will be passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-47" id="section-47">&#182;</a>
+  <a class="pilcrow" href="#section-45" id="section-45">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>scenario:end</code> event is emitted when the scenario has finished running.</p>
         </td>
@@ -1308,7 +1200,7 @@ are the results that will be passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-48" id="section-48">&#182;</a>
+  <a class="pilcrow" href="#section-46" id="section-46">&#182;</a>
 </div>
 <p>The next step is run with the results from the previous step as arguments.</p>
         </td>
@@ -1342,7 +1234,7 @@ are the results that will be passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-50" id="section-50">&#182;</a>
+  <a class="pilcrow" href="#section-48" id="section-48">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>step:error</code> event is emitted with the step description object and the error message if a step fails.</p>
         </td>
@@ -1356,7 +1248,7 @@ are the results that will be passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-51" id="section-51">&#182;</a>
+  <a class="pilcrow" href="#section-49" id="section-49">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>scenario:error</code> event is emitted with the error message if the scenario is interrupted.</p>
         </td>
@@ -1373,12 +1265,12 @@ are the results that will be passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-52" id="section-52">&#182;</a>
+  <a class="pilcrow" href="#section-50" id="section-50">&#182;</a>
 </div>
 <p><a href="scenario.client.js.html">HTTP client extensions</a> are added to the Scenario prototype.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
-  <span class="p">},</span> <span class="nx">ScenarioClientExtensions</span><span class="p">);</span>
+  <span class="p">},</span> <span class="nx">ScenarioClientExtensions</span><span class="p">,</span> <span class="nx">ScenarioParameterExtensions</span><span class="p">);</span>
 
 
 </pre></div>
@@ -1387,7 +1279,7 @@ are the results that will be passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-53" id="section-53">&#182;</a>
+  <a class="pilcrow" href="#section-51" id="section-51">&#182;</a>
 </div>
 <p>Utility class to hold multiple step arguments.
 See <code>#success</code> and <code>#skip</code>.</p>

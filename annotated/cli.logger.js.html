@@ -102,7 +102,32 @@
         <span class="p">}</span>
       <span class="p">}</span>
 
+      <span class="k">this</span><span class="p">.</span><span class="nx">configureLog4js</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+
       <span class="k">this</span><span class="p">.</span><span class="nx">configured</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">configureLog4js</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">logPattern</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">showTime</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">logPattern</span> <span class="o">+=</span> <span class="s1">&#39;%[[%d]%] &#39;</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="nx">logPattern</span> <span class="o">+=</span> <span class="s1">&#39;%m&#39;</span><span class="p">;</span>
+
+      <span class="nx">log4js</span><span class="p">.</span><span class="nx">configure</span><span class="p">({</span>
+        <span class="nx">appenders</span><span class="o">:</span> <span class="p">[</span>
+          <span class="p">{</span>
+            <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;console&#39;</span><span class="p">,</span>
+            <span class="nx">layout</span><span class="o">:</span> <span class="p">{</span>
+              <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;pattern&#39;</span><span class="p">,</span>
+              <span class="nx">pattern</span><span class="o">:</span> <span class="nx">logPattern</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">]</span>
+      <span class="p">});</span>
     <span class="p">},</span>
 
     <span class="nx">onScenarioStart</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
@@ -144,7 +169,7 @@
       <span class="k">this</span><span class="p">.</span><span class="nx">stepStart</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">();</span>
 
       <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">();</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">((</span><span class="s1">&#39;STEP &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="o">++</span><span class="k">this</span><span class="p">.</span><span class="nx">stepNumber</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="nx">description</span><span class="p">.</span><span class="nx">name</span><span class="p">).</span><span class="nx">bold</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">((</span><span class="s1">&#39;STEP &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">stepNumber</span><span class="o">++</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="nx">description</span><span class="p">.</span><span class="nx">name</span><span class="p">).</span><span class="nx">bold</span><span class="p">);</span>
     <span class="p">},</span>
 
     <span class="nx">onStepSkip</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">description</span><span class="p">,</span> <span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
