@@ -50,7 +50,10 @@ avoiding callbacks with the use of <a href="http://promises-aplus.github.io/prom
 It also includes a promise-based HTTP client based on the <a href="https://github.com/mikeal/request">request</a> library.
 Promises are provided by the <a href="https://github.com/kriskowal/q">q</a> library.</p>
         </td>
-        <td class="code highlight"><div class="highlight"><pre></pre></div>
+        <td class="code highlight"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">ioc</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./ioc&#39;</span><span class="p">);</span>
+
+
+</pre></div>
         </td>
       </tr>
       <tr>
@@ -65,7 +68,7 @@ Promises are provided by the <a href="https://github.com/kriskowal/q">q</a> libr
 
 <ul>
 <li><a href="scenario.js.html">scenario.js</a> - the class used to define data population or testing scenarios;</li>
-<li><a href="scenario.client.js.html">scenario.client.js</a> - scenario extensions to make HTTP calls;</li>
+<li><a href="scenario.ext.client.js.html">scenario.ext.client.js</a> - scenario extensions to make HTTP calls;</li>
 <li><a href="client.js.html">client.js</a> - a promise-based HTTP client around the <a href="https://github.com/mikeal/request">request</a> library.</li>
 <li><a href="cli.logger.js.html">cli.logger.js</a> - a command line logger that listens to scenario events;</li>
 <li><a href="cli.command.js.html">cli.command.js</a> - class responsible for parsing the configuration file and command line options;</li>
@@ -108,8 +111,8 @@ Promises are provided by the <a href="https://github.com/kriskowal/q">q</a> libr
         </td>
         <td class="code highlight"><div class="highlight"><pre>
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="nx">Scenario</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./scenario&#39;</span><span class="p">)(),</span>
-  <span class="nx">cli</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./cli&#39;</span><span class="p">),</span>
+  <span class="nx">Scenario</span><span class="o">:</span> <span class="nx">ioc</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;scenario&#39;</span><span class="p">),</span>
+  <span class="nx">cli</span><span class="o">:</span> <span class="nx">ioc</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;cli&#39;</span><span class="p">),</span>
   <span class="nx">version</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../package&#39;</span><span class="p">).</span><span class="nx">version</span>
 <span class="p">};</span>
 </pre></div>

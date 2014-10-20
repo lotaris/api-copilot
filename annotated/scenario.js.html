@@ -33,9 +33,6 @@
       <div class="heading h2">
         <a href="#constructor">Constructor</a>
       </div>
-      <div class="heading h3">
-        <a href="#client%20events">Client Events</a>
-      </div>
       <div class="heading h2">
         <a href="#flow%20control%20methods">Flow Control Methods</a>
       </div>
@@ -120,7 +117,7 @@ It also handles emitting events that are used by other components, e.g. for logg
 
 <ul>
 <li><a href="client.js.html">client.js</a> - HTTP client;</li>
-<li><a href="scenario.client.js.html">scenario.client.js</a> - scenario methods to make HTTP calls;</li>
+<li><a href="scenario.ext.client.js.html">scenario.ext.client.js</a> - scenario methods to make HTTP calls;</li>
 <li><a href="cli.logger.js.html">cli.logger.js</a> - command line logger based on events emitted by a scenario.</li>
 </ul>
         </td>
@@ -189,6 +186,8 @@ The following events can be emitted:</p>
     <span class="nx">slice</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">,</span>
     <span class="nx">util</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;util&#39;</span><span class="p">);</span>
 
+<span class="kd">var</span> <span class="nx">LOG_LEVELS</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;trace&#39;</span><span class="p">,</span> <span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span> <span class="p">];</span>
+
 
 </pre></div>
         </td>
@@ -203,69 +202,26 @@ The following events can be emitted:</p>
 </div>
 
 
-<p>This module exports a function that can be used to inject mock dependencies.
-Call the function with no arguments to get the Scenario class with its real dependencies:</p>
+<p>This module exports a factory function that can be used to inject mock dependencies.</p>
 
-
-<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">scenarioInjector</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./scenario&#39;</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">Scenario</span> <span class="o">=</span> <span class="nx">scenarioInjector</span><span class="p">();</span>
-</code></pre></div>
-
-
-
-<p>To inject mock dependencies, pass an object with mocks:</p>
-
-
-<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">Scenario</span> <span class="o">=</span> <span class="nx">scenarioInjector</span><span class="p">({</span>
-  <span class="nx">log4js</span><span class="o">:</span> <span class="nx">log4jsMock</span><span class="p">,</span>
-  <span class="nx">Client</span><span class="o">:</span> <span class="nx">ClientMock</span>
-<span class="p">});</span>
-</code></pre></div>
-
-
-
-<p>The following dependencies can be mocked:</p>
+<p>The following dependencies must be passed to the factory function in order:</p>
 
 <ul>
+<li><code>extensions</code> - an array of extension functions that will be passed the scenario prototype; see <a href="scenario.ext.js.html">scenario.ext.js</a> for the default extensions;</li>
 <li><code>log4js</code> - the logging framework;</li>
-<li><code>Client</code> - the HTTP client class.</li>
+<li><code>print</code> - a function to print text (e.g. console.log).</li>
 </ul>
+
+<p>For example:</p>
+
+
+<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">Scenario</span> <span class="o">=</span> <span class="nx">scenarioFactory</span><span class="p">(</span><span class="nx">log4jsMock</span><span class="p">,</span> <span class="nx">ClientMock</span><span class="p">,</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">);</span>
+</code></pre></div>
+
+
         </td>
         <td class="code highlight"><div class="highlight"><pre>
-<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">deps</span><span class="p">)</span> <span class="p">{</span>
-
-  <span class="nx">deps</span> <span class="o">=</span> <span class="nx">deps</span> <span class="o">||</span> <span class="p">{};</span>
-  <span class="kd">var</span> <span class="nx">log4js</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">log4js</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;log4js&#39;</span><span class="p">),</span>
-      <span class="nx">print</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">print</span> <span class="o">||</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">,</span>
-      <span class="nx">Client</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">Client</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./client&#39;</span><span class="p">)(),</span>
-
-
-</pre></div>
-        </td>
-      </tr>
-      <tr>
-        <td class="docs">
-<div class="pilwrap">
-  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
-</div>
-<p>Functionality related to HTTP calls is contained in <a href="scenario.client.js.html">scenario.client.js</a>.</p>
-        </td>
-        <td class="code highlight"><div class="highlight"><pre>
-      <span class="nx">ScenarioClientExtensions</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./scenario.client&#39;</span><span class="p">),</span>
-
-
-</pre></div>
-        </td>
-      </tr>
-      <tr>
-        <td class="docs">
-<div class="pilwrap">
-  <a class="pilcrow" href="#section-6" id="section-6">&#182;</a>
-</div>
-<p>Functionality related to runtime parameters is contained in <a href="scenario.params.js.html">scenario.params.js</a>.</p>
-        </td>
-        <td class="code highlight"><div class="highlight"><pre>
-      <span class="nx">ScenarioParameterExtensions</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./scenario.params&#39;</span><span class="p">)(</span><span class="nx">deps</span><span class="p">);</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">extensions</span><span class="p">,</span> <span class="nx">log4js</span><span class="p">,</span> <span class="nx">print</span><span class="p">)</span> <span class="p">{</span>
 
 
 </pre></div>
@@ -311,14 +267,11 @@ Call the function with no arguments to get the Scenario class with its real depe
 
     <span class="k">this</span><span class="p">.</span><span class="nx">baseOptions</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span> <span class="nx">options</span><span class="p">);</span>
 
-    <span class="k">this</span><span class="p">.</span><span class="nx">parameters</span> <span class="o">=</span> <span class="p">[];</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">parameterLoaders</span> <span class="o">=</span> <span class="p">[];</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">parameterValues</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">baseOptions</span><span class="p">.</span><span class="nx">params</span> <span class="o">||</span> <span class="p">{};</span>
-
     <span class="k">this</span><span class="p">.</span><span class="nx">steps</span> <span class="o">=</span> <span class="p">[];</span>
 
-    <span class="k">this</span><span class="p">.</span><span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Client</span><span class="p">();</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">requestFilters</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">initializers</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">initializer</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">initializer</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
 
 
 </pre></div>
@@ -327,7 +280,7 @@ Call the function with no arguments to get the Scenario class with its real depe
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-8" id="section-8">&#182;</a>
+  <a class="pilcrow" href="#section-6" id="section-6">&#182;</a>
 </div>
 <p>Most of these options are not handled by the scenario object itself.
 The <code>configure</code> event is emitted with all the options when the scenario is
@@ -340,35 +293,6 @@ the HTTP client.</p>
         <td class="code highlight"><div class="highlight"><pre>
     <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;configure&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">onConfigure</span><span class="p">,</span> <span class="k">this</span><span class="p">));</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;configure&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">emit</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">client</span><span class="p">,</span> <span class="s1">&#39;configure&#39;</span><span class="p">));</span>
-
-
-</pre></div>
-        </td>
-      </tr>
-      <tr>
-        <td class="docs">
-<div class="pilwrap" id="client%20events">
-  <h3>
-    <a href="#client%20events" name="client%20events" class="pilcrow">&#182;</a>
-    Client Events
-  </h3>
-</div>
-
-
-<p>All events emitted by the scenario's HTTP client are also emitted
-by the scenario object itself, with the <code>client:</code> prefix:</p>
-
-<ul>
-<li><code>client:request</code> - emitted when an HTTP request starts;</li>
-<li><code>client:error</code> - emitted when an HTTP request fails;</li>
-<li><code>client:response</code> - emitted when an HTTP response is received.</li>
-</ul>
-        </td>
-        <td class="code highlight"><div class="highlight"><pre>
-    <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">([</span> <span class="s1">&#39;request&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="s1">&#39;response&#39;</span> <span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">emit</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s1">&#39;client:&#39;</span> <span class="o">+</span> <span class="nx">event</span><span class="p">));</span>
-    <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
   <span class="p">}</span>
 
 
@@ -378,7 +302,7 @@ by the scenario object itself, with the <code>client:</code> prefix:</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-10" id="section-10">&#182;</a>
+  <a class="pilcrow" href="#section-7" id="section-7">&#182;</a>
 </div>
 <p>A scenario is an <a href="http://nodejs.org/api/events.html">event emitter</a>.</p>
         </td>
@@ -386,6 +310,13 @@ by the scenario object itself, with the <code>client:</code> prefix:</p>
   <span class="nx">util</span><span class="p">.</span><span class="nx">inherits</span><span class="p">(</span><span class="nx">Scenario</span><span class="p">,</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span><span class="p">);</span>
 
   <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Scenario</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
+
+    <span class="nx">initializers</span><span class="o">:</span> <span class="p">[],</span>
+    <span class="nx">beforeRun</span><span class="o">:</span> <span class="p">[],</span>
+
+    <span class="nx">defaultRunOptions</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">log</span><span class="o">:</span> <span class="s1">&#39;info&#39;</span>
+    <span class="p">},</span>
 
 
 </pre></div>
@@ -663,7 +594,7 @@ Further steps will not be executed and the scenario will complete successfully.<
 </div>
 
 
-<p>Also see <a href="scenario.client.js.html">scenario.client.js</a> for methods to make HTTP calls.</p>
+<p>Also see <a href="scenario.ext.client.js.html">scenario.ext.client.js</a> for methods to make HTTP calls.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
 
@@ -767,21 +698,15 @@ See <a href="https://github.com/kriskowal/q#combination">q combinations</a>.</p>
 
 <p>Called when the <code>configure</code> event is emitted.
 Sets the base URL and the default request options.
-See <a href="scenario.client.js.html">scenario.client.js</a></p>
+See <a href="scenario.ext.client.js.html">scenario.ext.client.js</a></p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
     <span class="nx">onConfigure</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">options</span> <span class="o">=</span> <span class="nx">options</span> <span class="o">||</span> <span class="p">{};</span>
 
-      <span class="k">if</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;baseUrl&#39;</span><span class="p">))</span> <span class="p">{</span>
-        <span class="k">this</span><span class="p">.</span><span class="nx">baseUrl</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">baseUrl</span><span class="p">;</span>
-      <span class="p">}</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">validateRunOptions</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
 
-      <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">defaultRequestOptions</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">this</span><span class="p">.</span><span class="nx">setDefaultRequestOptions</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">defaultRequestOptions</span><span class="p">);</span>
-      <span class="p">}</span>
-
-      <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">log</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">level</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">level</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="o">!=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">())</span> <span class="p">{</span>
         <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">setLevel</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">());</span>
       <span class="p">}</span>
     <span class="p">},</span>
@@ -889,7 +814,7 @@ if any step fails and it was interrupted.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-28" id="section-28">&#182;</a>
+  <a class="pilcrow" href="#section-25" id="section-25">&#182;</a>
 </div>
 <p>An error is thrown if no steps are defined.</p>
         </td>
@@ -898,8 +823,6 @@ if any step fails and it was interrupted.</p>
         <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;No step defined&#39;</span><span class="p">);</span>
       <span class="p">}</span>
 
-      <span class="k">this</span><span class="p">.</span><span class="nx">clearDefaultRequestOptions</span><span class="p">();</span>
-
 
 </pre></div>
         </td>
@@ -907,7 +830,7 @@ if any step fails and it was interrupted.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-29" id="section-29">&#182;</a>
+  <a class="pilcrow" href="#section-26" id="section-26">&#182;</a>
 </div>
 <p>Run options are built by overriding construction options
 with runtime options. Runtime options come from the command line and/or
@@ -915,6 +838,12 @@ configuration file; they are handled in <a href="cli.command.js.html">cli.comman
         </td>
         <td class="code highlight"><div class="highlight"><pre>
       <span class="kd">var</span> <span class="nx">runOptions</span> <span class="o">=</span> <span class="nx">merge</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">baseOptions</span><span class="p">,</span> <span class="nx">options</span> <span class="o">||</span> <span class="p">{});</span>
+      <span class="nx">_</span><span class="p">.</span><span class="nx">defaults</span><span class="p">(</span><span class="nx">runOptions</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultRunOptions</span><span class="p">);</span>
+
+      <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">q</span><span class="p">(</span><span class="nx">runOptions</span><span class="p">);</span>
+      <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">beforeRun</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">pre</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">promise</span> <span class="o">=</span> <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">pre</span><span class="p">,</span> <span class="k">this</span><span class="p">)).</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">q</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">runOptions</span><span class="p">));</span>
+      <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
 
 
 </pre></div>
@@ -923,13 +852,21 @@ configuration file; they are handled in <a href="cli.command.js.html">cli.comman
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-30" id="section-30">&#182;</a>
+  <a class="pilcrow" href="#section-27" id="section-27">&#182;</a>
 </div>
 <p>Runtime parameters are loaded and validated before actually running the scenario.
-This is handled in <a href="scenario.params.js.html">scenario.params.js</a>.</p>
+This is handled in <a href="scenario.ext.params.js.html">scenario.ext.params.js</a>.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
-      <span class="k">return</span> <span class="nx">q</span><span class="p">.</span><span class="nx">fcall</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">processParameters</span><span class="p">,</span> <span class="k">this</span><span class="p">),</span> <span class="nx">runOptions</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">runScenario</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">runOptions</span><span class="p">));</span>
+      <span class="k">return</span> <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">runScenario</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">runOptions</span><span class="p">));</span>
+    <span class="p">},</span>
+
+    <span class="nx">validateRunOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">runOptions</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">runOptions</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="o">!</span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">runOptions</span><span class="p">.</span><span class="nx">log</span><span class="p">)</span> <span class="o">||</span> <span class="o">!</span><span class="nx">_</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">LOG_LEVELS</span><span class="p">,</span> <span class="nx">runOptions</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">())))</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Unknown log level &quot;&#39;</span> <span class="o">+</span> <span class="nx">runOptions</span><span class="p">.</span><span class="nx">log</span> <span class="o">+</span> <span class="s1">&#39;&quot;; must be one of &#39;</span> <span class="o">+</span> <span class="nx">LOG_LEVELS</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">));</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="nx">runOptions</span><span class="p">;</span>
     <span class="p">},</span>
 
     <span class="nx">runScenario</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">runOptions</span><span class="p">)</span> <span class="p">{</span>
@@ -941,7 +878,7 @@ This is handled in <a href="scenario.params.js.html">scenario.params.js</a>.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-31" id="section-31">&#182;</a>
+  <a class="pilcrow" href="#section-28" id="section-28">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>configure</code> event is emitted with the run options before the scenario starts.
 Components listening to this event should update their configuration.</p>
@@ -956,7 +893,7 @@ Components listening to this event should update their configuration.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-32" id="section-32">&#182;</a>
+  <a class="pilcrow" href="#section-29" id="section-29">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>scenario:start</code> event is emitted with the run options when the scenario starts.</p>
         </td>
@@ -972,7 +909,7 @@ Components listening to this event should update their configuration.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-33" id="section-33">&#182;</a>
+  <a class="pilcrow" href="#section-30" id="section-30">&#182;</a>
 </div>
 <p>The scenario always starts with the first step.</p>
         </td>
@@ -986,7 +923,7 @@ Components listening to this event should update their configuration.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-34" id="section-34">&#182;</a>
+  <a class="pilcrow" href="#section-31" id="section-31">&#182;</a>
 </div>
 <p>The returned promise will be resolved when the last step of the scenario
 is done executing, or if a step fails and the scenario is interrupted.</p>
@@ -1030,7 +967,7 @@ to complete the scenario.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-36" id="section-36">&#182;</a>
+  <a class="pilcrow" href="#section-33" id="section-33">&#182;</a>
 </div>
 <p>The step description object is passed to all step events; it contains
 the name of the step that is being executed.</p>
@@ -1046,7 +983,7 @@ the name of the step that is being executed.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-37" id="section-37">&#182;</a>
+  <a class="pilcrow" href="#section-34" id="section-34">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>step:start</code> event is emitted before each step starts executing
 with the step description object and the step arguments.</p>
@@ -1061,7 +998,7 @@ with the step description object and the step arguments.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-38" id="section-38">&#182;</a>
+  <a class="pilcrow" href="#section-35" id="section-35">&#182;</a>
 </div>
 <p>The step definition function is called with this scenario as the context
 and with the step arguments. This is done with the q library so a promise
@@ -1077,7 +1014,7 @@ is returned and any errors are handled by the promise chain.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-39" id="section-39">&#182;</a>
+  <a class="pilcrow" href="#section-36" id="section-36">&#182;</a>
 </div>
 <p><code>#handleStepResult</code>  is called if the promise is resolved, <code>#handleStepError</code> otherwise.</p>
         </td>
@@ -1111,7 +1048,7 @@ is returned and any errors are handled by the promise chain.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-41" id="section-41">&#182;</a>
+  <a class="pilcrow" href="#section-38" id="section-38">&#182;</a>
 </div>
 <p>The results from the previous steps are given as additional arguments to this method.
 If the result is a single <code>StepArgs</code> object (such as returned by <code>#success</code>),
@@ -1133,7 +1070,7 @@ a promise can only be resolved with one value.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-42" id="section-42">&#182;</a>
+  <a class="pilcrow" href="#section-39" id="section-39">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>step:skip</code> event is emitted if the step was skipped.
 The first argument is the step description object, the second argument
@@ -1150,7 +1087,7 @@ passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-43" id="section-43">&#182;</a>
+  <a class="pilcrow" href="#section-40" id="section-40">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>step:done</code> event is emitted otherwise.
 The first argument is the step description object, and remaining arguments
@@ -1169,7 +1106,7 @@ are the results that will be passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-44" id="section-44">&#182;</a>
+  <a class="pilcrow" href="#section-41" id="section-41">&#182;</a>
 </div>
 <p>The scenario is stopped if there are no more steps to run or if it was marked as completed.</p>
         </td>
@@ -1183,7 +1120,7 @@ are the results that will be passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-45" id="section-45">&#182;</a>
+  <a class="pilcrow" href="#section-42" id="section-42">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>scenario:end</code> event is emitted when the scenario has finished running.</p>
         </td>
@@ -1200,7 +1137,7 @@ are the results that will be passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-46" id="section-46">&#182;</a>
+  <a class="pilcrow" href="#section-43" id="section-43">&#182;</a>
 </div>
 <p>The next step is run with the results from the previous step as arguments.</p>
         </td>
@@ -1234,7 +1171,7 @@ are the results that will be passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-48" id="section-48">&#182;</a>
+  <a class="pilcrow" href="#section-45" id="section-45">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>step:error</code> event is emitted with the step description object and the error message if a step fails.</p>
         </td>
@@ -1248,7 +1185,7 @@ are the results that will be passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-49" id="section-49">&#182;</a>
+  <a class="pilcrow" href="#section-46" id="section-46">&#182;</a>
 </div>
 <p><strong>EVENT:</strong> the <code>scenario:error</code> event is emitted with the error message if the scenario is interrupted.</p>
         </td>
@@ -1257,6 +1194,7 @@ are the results that will be passed to the next step.</p>
 
       <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
     <span class="p">}</span>
+  <span class="p">});</span>
 
 
 </pre></div>
@@ -1265,12 +1203,14 @@ are the results that will be passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-50" id="section-50">&#182;</a>
+  <a class="pilcrow" href="#section-47" id="section-47">&#182;</a>
 </div>
-<p><a href="scenario.client.js.html">HTTP client extensions</a> are added to the Scenario prototype.</p>
+<p>TODO: document extensions</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
-  <span class="p">},</span> <span class="nx">ScenarioClientExtensions</span><span class="p">,</span> <span class="nx">ScenarioParameterExtensions</span><span class="p">);</span>
+  <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">extensions</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">ext</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">ext</span><span class="p">(</span><span class="nx">Scenario</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span>
+  <span class="p">});</span>
 
 
 </pre></div>
@@ -1279,7 +1219,7 @@ are the results that will be passed to the next step.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-51" id="section-51">&#182;</a>
+  <a class="pilcrow" href="#section-48" id="section-48">&#182;</a>
 </div>
 <p>Utility class to hold multiple step arguments.
 See <code>#success</code> and <code>#skip</code>.</p>
@@ -1291,6 +1231,9 @@ See <code>#success</code> and <code>#skip</code>.</p>
 
   <span class="k">return</span> <span class="nx">Scenario</span><span class="p">;</span>
 <span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;@singleton&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;@require&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;scenario.ext&#39;</span><span class="p">,</span> <span class="s1">&#39;log4js&#39;</span><span class="p">,</span> <span class="s1">&#39;cli.print&#39;</span> <span class="p">];</span>
 </pre></div>
         </td>
       </tr>

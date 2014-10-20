@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>scenario.listing.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="doc-style.css" />
+  <script src="doc-filelist.js"></script>
+  <script>
+    var relativeDir = "", thisFile = "Users/unknow/Projects/lotaris/api-copilot//scenario.listing.js", defaultSidebar = true;
+  </script>
+  <script src="doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+          <h1>scenario.listing.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1">&#182;</a>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;underscore&#39;</span><span class="p">),</span>
+    <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">);</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Expected an array of scenarios, got &#39;</span> <span class="o">+</span> <span class="k">typeof</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">));</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">options</span> <span class="o">||</span> <span class="o">!</span><span class="nx">options</span><span class="p">.</span><span class="nx">source</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;The source directory option is required&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">var</span> <span class="nx">listing</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+
+    <span class="nx">listing</span> <span class="o">+=</span> <span class="s1">&#39;Source directory: &#39;</span> <span class="o">+</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">source</span><span class="p">);</span>
+    <span class="nx">listing</span> <span class="o">+=</span> <span class="s1">&#39;\n  (use the `-s, --source &lt;dir&gt;` option to list API scenarios from another directory)&#39;</span><span class="p">;</span>
+    <span class="nx">listing</span> <span class="o">+=</span> <span class="s1">&#39;\n&#39;</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">scenarios</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">listing</span> <span class="o">+=</span> <span class="s1">&#39;\n&#39;</span> <span class="o">+</span> <span class="s1">&#39;Available API scenarios: none&#39;</span><span class="p">.</span><span class="nx">yellow</span><span class="p">;</span>
+      <span class="nx">listing</span> <span class="o">+=</span> <span class="s1">&#39;\n&#39;</span><span class="p">;</span>
+      <span class="k">return</span> <span class="nx">listing</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">var</span> <span class="nx">longestFilename</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">memo</span><span class="p">,</span> <span class="nx">scenario</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">scenario</span><span class="p">.</span><span class="nx">file</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="nx">memo</span> <span class="o">?</span> <span class="nx">scenario</span><span class="p">.</span><span class="nx">file</span><span class="p">.</span><span class="nx">length</span> <span class="o">:</span> <span class="nx">memo</span><span class="p">;</span>
+    <span class="p">},</span> <span class="mi">0</span><span class="p">);</span>
+
+    <span class="kd">var</span> <span class="nx">known</span> <span class="o">=</span> <span class="p">{};</span>
+
+    <span class="nx">listing</span> <span class="o">+=</span> <span class="s1">&#39;\n&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;Available API scenarios (&#39;</span> <span class="o">+</span> <span class="nx">scenarios</span><span class="p">.</span><span class="nx">length</span> <span class="o">+</span> <span class="s1">&#39;):&#39;</span><span class="p">).</span><span class="nx">bold</span><span class="p">;</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">scenario</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">scenario</span><span class="p">.</span><span class="nx">name</span><span class="p">;</span>
+      <span class="nx">listing</span> <span class="o">+=</span> <span class="s1">&#39;\n&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;) &#39;</span><span class="p">;</span>
+      
+      <span class="k">if</span> <span class="p">(</span><span class="nx">known</span><span class="p">[</span><span class="nx">name</span><span class="p">])</span> <span class="p">{</span>
+        <span class="nx">listing</span> <span class="o">+=</span> <span class="nx">scenario</span><span class="p">.</span><span class="nx">file</span><span class="p">;</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">listing</span> <span class="o">+=</span> <span class="nx">pad</span><span class="p">(</span><span class="nx">scenario</span><span class="p">.</span><span class="nx">file</span><span class="p">,</span> <span class="nx">longestFilename</span> <span class="o">+</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="nx">name</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="nx">known</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">});</span>
+
+    <span class="k">return</span> <span class="nx">listing</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="kd">function</span> <span class="nx">pad</span><span class="p">(</span><span class="nx">string</span><span class="p">,</span> <span class="nx">width</span><span class="p">,</span> <span class="nx">padding</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">string</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="nx">width</span> <span class="o">?</span> <span class="nx">string</span> <span class="o">:</span> <span class="nx">pad</span><span class="p">(</span><span class="nx">string</span> <span class="o">+</span> <span class="nx">padding</span><span class="p">,</span> <span class="nx">width</span><span class="p">,</span> <span class="nx">padding</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;@require&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[];</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

@@ -37,23 +37,27 @@
 </div>
 
         </td>
-        <td class="code highlight"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">colors</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;colors&#39;</span><span class="p">),</span>
-    <span class="nx">Program</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./cli.program&#39;</span><span class="p">)();</span>
+        <td class="code highlight"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">colors</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;colors&#39;</span><span class="p">);</span>
 
-<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">argv</span><span class="p">)</span> <span class="p">{</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">CliProgram</span><span class="p">)</span> <span class="p">{</span>
 
-  <span class="kd">var</span> <span class="nx">program</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Program</span><span class="p">();</span>
-  <span class="nx">program</span><span class="p">.</span><span class="nx">execute</span><span class="p">(</span><span class="nx">argv</span> <span class="o">||</span> <span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">).</span><span class="nx">fail</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">argv</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">();</span>
-      <span class="nx">console</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="nx">program</span><span class="p">.</span><span class="nx">trace</span> <span class="o">?</span> <span class="nx">err</span><span class="p">.</span><span class="nx">stack</span><span class="p">.</span><span class="nx">yellow</span> <span class="o">:</span> <span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="p">.</span><span class="nx">yellow</span><span class="p">);</span>
-      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">();</span>
-    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">program</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">CliProgram</span><span class="p">();</span>
+    <span class="nx">program</span><span class="p">.</span><span class="nx">execute</span><span class="p">(</span><span class="nx">argv</span> <span class="o">||</span> <span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">).</span><span class="nx">fail</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
-  <span class="p">});</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">();</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="nx">program</span><span class="p">.</span><span class="nx">trace</span> <span class="o">?</span> <span class="nx">err</span><span class="p">.</span><span class="nx">stack</span><span class="p">.</span><span class="nx">yellow</span> <span class="o">:</span> <span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="p">.</span><span class="nx">yellow</span><span class="p">);</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">();</span>
+      <span class="p">}</span>
+
+      <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">};</span>
 <span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;@require&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;cli.program&#39;</span> <span class="p">];</span>
 </pre></div>
         </td>
       </tr>

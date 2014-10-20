@@ -39,36 +39,36 @@
         </td>
         <td class="code highlight"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;underscore&#39;</span><span class="p">),</span>
     <span class="nx">commander</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;commander&#39;</span><span class="p">),</span>
+    <span class="nx">inflection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;inflection&#39;</span><span class="p">),</span>
     <span class="nx">merge</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;deepmerge&#39;</span><span class="p">),</span>
     <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">),</span>
+    <span class="nx">pkg</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../package&#39;</span><span class="p">),</span>
     <span class="nx">q</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">),</span>
     <span class="nx">slice</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">,</span>
     <span class="nx">yaml</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;js-yaml&#39;</span><span class="p">);</span>
 
-<span class="kd">var</span> <span class="nx">pkg</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../package&#39;</span><span class="p">),</span>
-    <span class="nx">LOG_LEVELS</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;trace&#39;</span><span class="p">,</span> <span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span> <span class="p">],</span>
-    <span class="nx">OPTIONS</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;baseUrl&#39;</span><span class="p">,</span> <span class="s1">&#39;params&#39;</span><span class="p">,</span> <span class="s1">&#39;showTime&#39;</span><span class="p">,</span> <span class="s1">&#39;showRequest&#39;</span><span class="p">,</span> <span class="s1">&#39;showResponseBody&#39;</span><span class="p">,</span> <span class="s1">&#39;showFullUrl&#39;</span> <span class="p">],</span>
+<span class="kd">var</span> <span class="nx">OPTIONS</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;baseUrl&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;showTime&#39;</span><span class="p">,</span> <span class="s1">&#39;showRequest&#39;</span><span class="p">,</span> <span class="s1">&#39;showResponseBody&#39;</span><span class="p">,</span> <span class="s1">&#39;showFullUrl&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;requestPipeline&#39;</span><span class="p">,</span> <span class="s1">&#39;requestCooldown&#39;</span><span class="p">,</span> <span class="s1">&#39;requestDelay&#39;</span>
+    <span class="p">],</span>
+    <span class="nx">BOOLEAN_OPTIONS</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;showTime&#39;</span><span class="p">,</span> <span class="s1">&#39;showRequest&#39;</span><span class="p">,</span> <span class="s1">&#39;showResponseBody&#39;</span><span class="p">,</span> <span class="s1">&#39;showFullUrl&#39;</span><span class="p">,</span> <span class="s1">&#39;defaultConfigs&#39;</span> <span class="p">],</span>
+    <span class="nx">INTEGER_OPTIONS</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;requestPipeline&#39;</span><span class="p">,</span> <span class="s1">&#39;requestCooldown&#39;</span><span class="p">,</span> <span class="s1">&#39;requestDelay&#39;</span> <span class="p">],</span>
     <span class="nx">PARAM_REGEXP</span> <span class="o">=</span> <span class="sr">/^([^=]+)=(.*)$/</span><span class="p">;</span>
 
-<span class="kd">var</span> <span class="nx">DEFAULT_HANDLERS</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="nx">info</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./cli.info&#39;</span><span class="p">)().</span><span class="nx">handler</span><span class="p">(),</span>
-  <span class="nx">run</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./cli.runner&#39;</span><span class="p">)().</span><span class="nx">handler</span><span class="p">(),</span>
-  <span class="nx">list</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./cli.listing&#39;</span><span class="p">)().</span><span class="nx">handler</span><span class="p">()</span>
-<span class="p">};</span>
-
-<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">deps</span><span class="p">)</span> <span class="p">{</span>
-
-  <span class="nx">deps</span> <span class="o">=</span> <span class="nx">deps</span> <span class="o">||</span> <span class="p">{};</span>
-  <span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">fs</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">);</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cliInfo</span><span class="p">,</span> <span class="nx">cliListing</span><span class="p">,</span> <span class="nx">cliRunner</span><span class="p">,</span> <span class="nx">cliEnv</span><span class="p">,</span> <span class="nx">fs</span><span class="p">)</span> <span class="p">{</span>
 
   <span class="kd">function</span> <span class="nx">Program</span><span class="p">(</span><span class="nx">handlers</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">handlers</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">defaults</span><span class="p">({},</span> <span class="nx">handlers</span><span class="p">,</span> <span class="nx">DEFAULT_HANDLERS</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">handlers</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">defaults</span><span class="p">({},</span> <span class="nx">handlers</span><span class="p">,</span> <span class="p">{</span>
+      <span class="nx">info</span><span class="o">:</span> <span class="nx">cliInfo</span><span class="p">,</span>
+      <span class="nx">list</span><span class="o">:</span> <span class="nx">cliListing</span><span class="p">,</span>
+      <span class="nx">run</span><span class="o">:</span> <span class="nx">cliRunner</span>
+    <span class="p">});</span>
   <span class="p">}</span>
 
   <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Program</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
 
     <span class="nx">defaultOptions</span><span class="o">:</span> <span class="p">{</span>
-      <span class="nx">log</span><span class="o">:</span> <span class="s1">&#39;info&#39;</span><span class="p">,</span>
       <span class="nx">source</span><span class="o">:</span> <span class="s1">&#39;api&#39;</span><span class="p">,</span>
       <span class="nx">config</span><span class="o">:</span> <span class="s1">&#39;api-copilot.yml&#39;</span>
     <span class="p">},</span>
@@ -89,8 +89,9 @@
       <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">;</span>
     <span class="p">},</span>
 
-    <span class="nx">executeAction</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">command</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">executeAction</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">command</span><span class="p">,</span> <span class="nx">arity</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">)</span> <span class="p">{</span>
 
+      <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">q</span><span class="p">({});</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">currentAction</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
 
 
@@ -107,14 +108,53 @@
         <td class="code highlight"><div class="highlight"><pre>
       <span class="k">this</span><span class="p">.</span><span class="nx">setTrace</span><span class="p">(</span><span class="nx">command</span><span class="p">);</span>
 
-      <span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">loadConfigurationFileOptions</span><span class="p">(</span><span class="nx">command</span><span class="p">);</span>
+      <span class="kd">var</span> <span class="nx">envOptions</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">loadEnvironmentOptions</span><span class="p">();</span>
 
-      <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="nx">merge</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">pickOptions</span><span class="p">(</span><span class="nx">config</span><span class="p">)),</span> <span class="k">this</span><span class="p">.</span><span class="nx">pickOptions</span><span class="p">(</span><span class="nx">command</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">));</span>
+      <span class="kd">var</span> <span class="nx">configFiles</span> <span class="o">=</span> <span class="p">[];</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">command</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">configFiles</span> <span class="o">=</span> <span class="nx">command</span><span class="p">.</span><span class="nx">config</span><span class="p">;</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">envOptions</span><span class="p">.</span><span class="nx">config</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">configFiles</span> <span class="o">=</span> <span class="p">[</span> <span class="nx">envOptions</span><span class="p">.</span><span class="nx">config</span> <span class="p">];</span>
+      <span class="p">}</span>
+
+      <span class="kd">var</span> <span class="nx">defaultConfigs</span> <span class="o">=</span> <span class="nx">command</span><span class="p">.</span><span class="nx">defaultConfigs</span> <span class="o">||</span> <span class="nx">envOptions</span><span class="p">.</span><span class="nx">defaultConfigs</span><span class="p">,</span>
+          <span class="nx">defaultConfigsCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">configFiles</span><span class="p">.</span><span class="nx">length</span> <span class="o">||</span> <span class="nx">defaultConfigs</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="nx">defaultConfigsCount</span><span class="o">++</span><span class="p">;</span>
+        <span class="nx">configFiles</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span><span class="s1">&#39;api-copilot.yml&#39;</span><span class="p">);</span>
+
+        <span class="kd">var</span> <span class="nx">home</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">homeDirectory</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">home</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">defaultConfigsCount</span><span class="o">++</span><span class="p">;</span>
+          <span class="nx">configFiles</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">home</span><span class="p">,</span> <span class="s1">&#39;.api-copilot.yml&#39;</span><span class="p">));</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">configFiles</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">configFiles</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">promise</span> <span class="o">=</span> <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">loadConfigurationFileOptions</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">file</span><span class="p">,</span> <span class="nx">defaultConfigsCount</span><span class="o">--</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">));</span>
+        <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="kd">var</span> <span class="nx">commandArgs</span> <span class="o">=</span> <span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span> <span class="o">+</span> <span class="nx">arity</span><span class="p">);</span>
+
+      <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">configOptions</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">executeHandler</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="p">[</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">command</span><span class="p">,</span> <span class="nx">arity</span><span class="p">,</span> <span class="nx">envOptions</span><span class="p">,</span> <span class="nx">configFiles</span><span class="p">,</span> <span class="nx">configOptions</span><span class="p">,</span> <span class="nx">deferred</span> <span class="p">].</span><span class="nx">concat</span><span class="p">(</span><span class="nx">commandArgs</span><span class="p">));</span>
+      <span class="p">},</span> <span class="k">this</span><span class="p">),</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">);</span>
+    <span class="p">},</span>
+
+    <span class="nx">executeHandler</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">command</span><span class="p">,</span> <span class="nx">arity</span><span class="p">,</span> <span class="nx">envOptions</span><span class="p">,</span> <span class="nx">configFiles</span><span class="p">,</span> <span class="nx">configOptions</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">pickOptions</span><span class="p">(</span><span class="nx">configOptions</span><span class="p">));</span>
+      <span class="nx">options</span> <span class="o">=</span> <span class="nx">merge</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">envOptions</span><span class="p">);</span>
+      <span class="nx">options</span> <span class="o">=</span> <span class="nx">merge</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">pickOptions</span><span class="p">(</span><span class="nx">command</span><span class="p">));</span>
+
       <span class="k">this</span><span class="p">.</span><span class="nx">setTrace</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
 
-      <span class="nx">options</span><span class="p">.</span><span class="nx">log</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">parseLogLevel</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">log</span><span class="p">);</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">setTrace</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+      <span class="nx">options</span><span class="p">.</span><span class="nx">config</span> <span class="o">=</span> <span class="nx">configFiles</span><span class="p">;</span>
 
+      <span class="nx">options</span><span class="p">.</span><span class="nx">params</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span> <span class="nx">configOptions</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="nx">command</span><span class="p">.</span><span class="nx">params</span><span class="p">);</span>
       <span class="k">if</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">params</span><span class="p">))</span> <span class="p">{</span>
         <span class="k">delete</span> <span class="nx">options</span><span class="p">.</span><span class="nx">params</span><span class="p">;</span>
       <span class="p">}</span>
@@ -126,10 +166,15 @@
         <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Handler &quot;&#39;</span> <span class="o">+</span> <span class="nx">name</span> <span class="o">+</span> <span class="s1">&#39;&quot; is not a function, got &#39;</span> <span class="o">+</span> <span class="k">typeof</span><span class="p">(</span><span class="nx">handler</span><span class="p">));</span>
       <span class="p">}</span>
 
-      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">compact</span><span class="p">(</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">));</span>
-      <span class="nx">args</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">compact</span><span class="p">(</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span> <span class="o">+</span> <span class="nx">arity</span><span class="p">));</span>
 
-      <span class="nx">q</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="nx">handler</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">undefined</span><span class="p">,</span> <span class="nx">args</span><span class="p">)).</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">),</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">));</span>
+      <span class="nx">_</span><span class="p">.</span><span class="nx">times</span><span class="p">(</span><span class="nx">arity</span> <span class="o">-</span> <span class="nx">args</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">args</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+      <span class="p">});</span>
+
+      <span class="nx">args</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+
+      <span class="nx">q</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="nx">handler</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">undefined</span><span class="p">,</span> <span class="nx">args</span><span class="p">)).</span><span class="nx">then</span><span class="p">(</span><span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">);</span>
     <span class="p">},</span>
 
     <span class="nx">buildCommand</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">deferred</span><span class="p">)</span> <span class="p">{</span>
@@ -138,7 +183,6 @@
 
       <span class="nx">program</span>
         <span class="p">.</span><span class="nx">version</span><span class="p">(</span><span class="nx">pkg</span><span class="p">.</span><span class="nx">version</span><span class="p">)</span>
-        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-c, --config [file]&#39;</span><span class="p">,</span> <span class="s1">&#39;Set the configuration file path&#39;</span><span class="p">)</span>
         <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-l, --log [level]&#39;</span><span class="p">,</span> <span class="s1">&#39;Log level (trace, debug, info; info by default)&#39;</span><span class="p">)</span>
         <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-s, --source [dir]&#39;</span><span class="p">,</span> <span class="s1">&#39;Directory where API scenarios are located (&quot;api&quot; by default)&#39;</span><span class="p">)</span>
         <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-u, --base-url [url]&#39;</span><span class="p">,</span> <span class="s1">&#39;(run) Override the base URL of the scenario&#39;</span><span class="p">)</span>
@@ -146,22 +190,27 @@
         <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-t, --show-time&#39;</span><span class="p">,</span> <span class="s1">&#39;(run) Print the date and time with each log&#39;</span><span class="p">)</span>
         <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-q, --show-request&#39;</span><span class="p">,</span> <span class="s1">&#39;(run) Print options for each HTTP request (only with debug or trace log level)&#39;</span><span class="p">)</span>
         <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-b, --show-response-body&#39;</span><span class="p">,</span> <span class="s1">&#39;(run) Print response body for each HTTP request (only with debug or trace log level)&#39;</span><span class="p">)</span>
-        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;--show-full-url&#39;</span><span class="p">,</span> <span class="s1">&#39;(run) Show full URLs even when a base URL is configured (only with debug or trace log level)&#39;</span><span class="p">);</span>
+        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;--show-full-url&#39;</span><span class="p">,</span> <span class="s1">&#39;(run) Show full URLs even when a base URL is configured (only with debug or trace log level)&#39;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;--request-pipeline &lt;n&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;(run) maximum number of HTTP requests to run in parallel (no limit by default)&#39;</span><span class="p">,</span> <span class="nb">parseInt</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;--request-cooldown &lt;ms&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;(run) if set and an HTTP request ends, no other request will be started before this time (milliseconds) has elapsed (no cooldown by default)&#39;</span><span class="p">,</span> <span class="nb">parseInt</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;--request-delay &lt;ms&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;(run) if set and an HTTP request starts, no other request will be started before this time (milliseconds) has elapsed (no delay by default)&#39;</span><span class="p">,</span> <span class="nb">parseInt</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-c, --config [file]&#39;</span><span class="p">,</span> <span class="s1">&#39;Read options from a YAML configuration file (can be used multiple times; disables default configuration files)&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">collectFiles</span><span class="p">,</span> <span class="k">this</span><span class="p">),</span> <span class="p">[])</span>
+        <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;--default-configs&#39;</span><span class="p">,</span> <span class="s1">&#39;Combine default configuration files with custom ones ($HOME/.api-copilot.yml and api-copilot.yml)&#39;</span><span class="p">);</span>
 
       <span class="nx">program</span>
         <span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="s1">&#39;list&#39;</span><span class="p">)</span>
         <span class="p">.</span><span class="nx">description</span><span class="p">(</span><span class="s1">&#39;list available API scenarios&#39;</span><span class="p">)</span>
-        <span class="p">.</span><span class="nx">action</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">executeAction</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="nx">program</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">));</span>
+        <span class="p">.</span><span class="nx">action</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">executeAction</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="nx">program</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">));</span>
 
       <span class="nx">program</span>
         <span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="s1">&#39;info [scenario]&#39;</span><span class="p">)</span>
         <span class="p">.</span><span class="nx">description</span><span class="p">(</span><span class="s1">&#39;describe an API scenario&#39;</span><span class="p">)</span>
-        <span class="p">.</span><span class="nx">action</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">executeAction</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="nx">program</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">));</span>
+        <span class="p">.</span><span class="nx">action</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">executeAction</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="nx">program</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">));</span>
 
       <span class="nx">program</span>
         <span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="s1">&#39;run [scenario]&#39;</span><span class="p">)</span>
         <span class="p">.</span><span class="nx">description</span><span class="p">(</span><span class="s1">&#39;run an API scenario&#39;</span><span class="p">)</span>
-        <span class="p">.</span><span class="nx">action</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">executeAction</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="nx">program</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">));</span>
+        <span class="p">.</span><span class="nx">action</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">executeAction</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="nx">program</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">));</span>
 
       <span class="nx">program</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;--help&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
         <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;  Custom Parameters:&#39;</span><span class="p">);</span>
@@ -174,15 +223,70 @@
       <span class="k">return</span> <span class="nx">program</span><span class="p">;</span>
     <span class="p">},</span>
 
-    <span class="nx">loadConfigurationFileOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">loadConfigurationFileOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">file</span><span class="p">,</span> <span class="nx">required</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">file</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span>
 
-      <span class="kd">var</span> <span class="nx">configFile</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="nx">options</span><span class="p">.</span><span class="nx">config</span> <span class="o">||</span> <span class="s1">&#39;api-copilot.yml&#39;</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">readConfigurationFile</span><span class="p">(</span><span class="nx">file</span><span class="p">,</span> <span class="nx">required</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">configFileOptions</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">configFileOptions</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">options</span><span class="p">;</span> <span class="c1">// TODO: spec this</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">configFileOptions</span><span class="p">))</span> <span class="p">{</span> <span class="c1">// TODO: spec this</span>
+          <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Configuration file &#39;</span> <span class="o">+</span> <span class="nx">file</span> <span class="o">+</span> <span class="s1">&#39; does not contain valid options (expected an object, got &#39;</span> <span class="o">+</span> <span class="k">typeof</span><span class="p">(</span><span class="nx">configFileOptions</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span><span class="p">);</span>
+        <span class="p">}</span>
 
-      <span class="k">if</span> <span class="p">(</span><span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span><span class="p">(</span><span class="nx">configFile</span><span class="p">))</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="nx">yaml</span><span class="p">.</span><span class="nx">safeLoad</span><span class="p">(</span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">configFile</span><span class="p">,</span> <span class="p">{</span> <span class="nx">encoding</span><span class="o">:</span> <span class="s1">&#39;utf8&#39;</span> <span class="p">}));</span>
-      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="p">{};</span>
-      <span class="p">}</span>
+        <span class="nx">options</span> <span class="o">=</span> <span class="nx">merge</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">configFileOptions</span><span class="p">);</span>
+        <span class="nx">options</span><span class="p">.</span><span class="nx">params</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span> <span class="nx">options</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="nx">configFileOptions</span><span class="p">.</span><span class="nx">params</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nx">options</span><span class="p">;</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+
+    <span class="nx">readConfigurationFile</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">file</span><span class="p">,</span> <span class="nx">required</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
+      <span class="nx">fs</span><span class="p">.</span><span class="nx">exists</span><span class="p">(</span><span class="nx">file</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">exists</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">exists</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// TODO: spec this</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">required</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;No such configuration file &#39;</span> <span class="o">+</span> <span class="nx">file</span><span class="p">));</span>
+          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nx">q</span><span class="p">.</span><span class="nx">nfcall</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">,</span> <span class="nx">fs</span><span class="p">),</span> <span class="nx">file</span><span class="p">,</span> <span class="p">{</span> <span class="nx">encoding</span><span class="o">:</span> <span class="s1">&#39;utf8&#39;</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">contents</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">yaml</span><span class="p">.</span><span class="nx">safeLoad</span><span class="p">(</span><span class="nx">contents</span><span class="p">));</span>
+        <span class="p">},</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">);</span>
+      <span class="p">});</span>
+
+      <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">loadEnvironmentOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">names</span> <span class="o">=</span> <span class="nx">OPTIONS</span><span class="p">.</span><span class="nx">concat</span><span class="p">([</span> <span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="s1">&#39;defaultConfigs&#39;</span> <span class="p">]);</span>
+
+      <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="nx">names</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">memo</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="kd">var</span> <span class="nx">envName</span> <span class="o">=</span> <span class="s1">&#39;API_COPILOT_&#39;</span> <span class="o">+</span> <span class="nx">inflection</span><span class="p">.</span><span class="nx">underscore</span><span class="p">(</span><span class="nx">name</span><span class="p">).</span><span class="nx">toUpperCase</span><span class="p">();</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">cliEnv</span><span class="p">,</span> <span class="nx">envName</span><span class="p">))</span> <span class="p">{</span>
+          <span class="nx">memo</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">cliEnv</span><span class="p">[</span><span class="nx">envName</span><span class="p">];</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nx">memo</span><span class="p">;</span>
+      <span class="p">},</span> <span class="p">{});</span>
+
+      <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">BOOLEAN_OPTIONS</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">name</span><span class="p">))</span> <span class="p">{</span>
+          <span class="nx">options</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="o">!!</span><span class="nx">options</span><span class="p">[</span><span class="nx">name</span><span class="p">].</span><span class="nx">match</span><span class="p">(</span><span class="sr">/^(1|y|yes|t|true)$/i</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">});</span>
+
+      <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">INTEGER_OPTIONS</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">options</span><span class="p">[</span><span class="nx">name</span><span class="p">]))</span> <span class="p">{</span>
+          <span class="nx">options</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">options</span><span class="p">[</span><span class="nx">name</span><span class="p">],</span> <span class="mi">10</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">});</span>
+
+      <span class="k">return</span> <span class="nx">options</span><span class="p">;</span>
     <span class="p">},</span>
 
     <span class="nx">pickOptions</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">source</span><span class="p">)</span> <span class="p">{</span>
@@ -190,8 +294,9 @@
       <span class="k">return</span> <span class="nx">source</span> <span class="o">?</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pick</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">_</span><span class="p">,</span> <span class="p">[</span> <span class="nx">source</span> <span class="p">].</span><span class="nx">concat</span><span class="p">(</span><span class="nx">names</span><span class="p">))</span> <span class="o">:</span> <span class="p">{};</span>
     <span class="p">},</span>
 
-    <span class="nx">parseLogLevel</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">level</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">level</span> <span class="o">&amp;&amp;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">LOG_LEVELS</span><span class="p">,</span> <span class="nx">level</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">toLowerCase</span><span class="p">())</span> <span class="o">?</span> <span class="nx">level</span> <span class="o">:</span> <span class="s1">&#39;info&#39;</span><span class="p">;</span>
+    <span class="nx">collectFiles</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">file</span><span class="p">,</span> <span class="nx">files</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">files</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">files</span><span class="p">;</span>
     <span class="p">},</span>
 
     <span class="nx">collectParams</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">paramString</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="p">{</span>
@@ -205,18 +310,26 @@
         <span class="nx">value</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
       <span class="p">}</span>
 
-      <span class="nx">params</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+      <span class="nx">params</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">params</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">||</span> <span class="p">[];</span>
+      <span class="nx">params</span><span class="p">[</span><span class="nx">name</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 
       <span class="k">return</span> <span class="nx">params</span><span class="p">;</span>
     <span class="p">},</span>
 
     <span class="nx">setTrace</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">source</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">trace</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">source</span><span class="p">.</span><span class="nx">log</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">source</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;trace&#39;</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">homeDirectory</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">cliEnv</span><span class="p">.</span><span class="nx">HOME</span> <span class="o">||</span> <span class="nx">cliEnv</span><span class="p">.</span><span class="nx">HOMEPATH</span> <span class="o">||</span> <span class="nx">cliEnv</span><span class="p">.</span><span class="nx">USERPROFILE</span><span class="p">;</span>
     <span class="p">}</span>
   <span class="p">});</span>
 
   <span class="k">return</span> <span class="nx">Program</span><span class="p">;</span>
 <span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;@singleton&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;@require&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;cli.info&#39;</span><span class="p">,</span> <span class="s1">&#39;cli.listing&#39;</span><span class="p">,</span> <span class="s1">&#39;cli.runner&#39;</span><span class="p">,</span> <span class="s1">&#39;cli.env&#39;</span><span class="p">,</span> <span class="s1">&#39;fs&#39;</span> <span class="p">];</span>
 </pre></div>
         </td>
       </tr>

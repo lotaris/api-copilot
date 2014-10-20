@@ -41,131 +41,100 @@
     <span class="nx">q</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">),</span>
     <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">);</span>
 
-<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">deps</span><span class="p">)</span> <span class="p">{</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">scenarioFinder</span><span class="p">,</span> <span class="nx">scenarioListing</span><span class="p">,</span> <span class="nx">scenarioLoader</span><span class="p">,</span> <span class="nx">readline</span><span class="p">,</span> <span class="nx">print</span><span class="p">)</span> <span class="p">{</span>
 
-  <span class="nx">deps</span> <span class="o">=</span> <span class="nx">deps</span> <span class="o">||</span> <span class="p">{};</span>
-  <span class="kd">var</span> <span class="nx">readline</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">readline</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;readline&#39;</span><span class="p">),</span>
-      <span class="nx">scenarioLoader</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">scenarioLoader</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./scenario.loader&#39;</span><span class="p">),</span>
-      <span class="nx">Listing</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">Listing</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./cli.listing&#39;</span><span class="p">)();</span>
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">choice</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">scenarioFinder</span><span class="p">(</span><span class="nx">options</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">selectScenario</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">choice</span><span class="p">,</span> <span class="nx">options</span><span class="p">));</span>
+  <span class="p">};</span>
 
-
-</pre></div>
-        </td>
-      </tr>
-      <tr>
-        <td class="docs">
-<div class="pilwrap">
-  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
-</div>
-<p>TODO: refactor as function</p>
-        </td>
-        <td class="code highlight"><div class="highlight"><pre>
-  <span class="kd">function</span> <span class="nx">ScenarioSelector</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">scenarios</span> <span class="o">=</span> <span class="nx">scenarios</span><span class="p">;</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">listing</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Listing</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
-    <span class="nx">_</span><span class="p">.</span><span class="nx">bindAll</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s1">&#39;findScenario&#39;</span><span class="p">,</span> <span class="s1">&#39;validateAndLoad&#39;</span><span class="p">);</span>
+  <span class="kd">function</span> <span class="nx">selectScenario</span><span class="p">(</span><span class="nx">choice</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">foundScenarios</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">q</span><span class="p">.</span><span class="nx">fcall</span><span class="p">(</span><span class="nx">findScenario</span><span class="p">,</span> <span class="nx">foundScenarios</span><span class="p">,</span> <span class="nx">choice</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
   <span class="p">}</span>
 
-  <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">ScenarioSelector</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
+  <span class="kd">function</span> <span class="nx">findScenario</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="nx">choice</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="nx">select</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">choice</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">q</span><span class="p">.</span><span class="nx">fcall</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">findScenario</span><span class="p">,</span> <span class="nx">choice</span><span class="p">);</span>
-    <span class="p">},</span>
-
-    <span class="nx">findScenario</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">choice</span><span class="p">)</span> <span class="p">{</span>
-
-      <span class="kd">var</span> <span class="nx">scenarios</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">scenarios</span><span class="p">;</span>
-      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">scenarios</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">this</span><span class="p">.</span><span class="nx">listing</span><span class="p">.</span><span class="nx">display</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">);</span>
-        <span class="k">return</span> <span class="nx">q</span><span class="p">();</span>
-      <span class="p">}</span>
-
-      <span class="k">if</span> <span class="p">(</span><span class="nx">scenarios</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">choice</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">loadScenario</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">file</span><span class="p">);</span>
-      <span class="p">}</span>
-
-      <span class="k">if</span> <span class="p">(</span><span class="nx">choice</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="nx">q</span><span class="p">.</span><span class="nx">fcall</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">validateAndLoad</span><span class="p">,</span> <span class="nx">scenarios</span><span class="p">,</span> <span class="nx">choice</span><span class="p">).</span><span class="nx">fail</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-          <span class="k">this</span><span class="p">.</span><span class="nx">listing</span><span class="p">.</span><span class="nx">display</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">);</span>
-          <span class="k">return</span> <span class="nx">q</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
-        <span class="p">},</span> <span class="k">this</span><span class="p">));</span>
-      <span class="p">}</span>
-
-      <span class="k">this</span><span class="p">.</span><span class="nx">listing</span><span class="p">.</span><span class="nx">display</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">);</span>
-
-      <span class="kd">var</span> <span class="nx">names</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">);</span>
-
-      <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">defer</span><span class="p">(),</span>
-          <span class="nx">rl</span> <span class="o">=</span> <span class="nx">readline</span><span class="p">.</span><span class="nx">createInterface</span><span class="p">({</span>
-            <span class="nx">input</span><span class="o">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">stdin</span><span class="p">,</span>
-            <span class="nx">output</span><span class="o">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">,</span>
-            <span class="nx">completer</span><span class="o">:</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">autoCompleter</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">names</span><span class="p">)</span>
-          <span class="p">});</span>
-
-      <span class="nx">rl</span><span class="p">.</span><span class="nx">question</span><span class="p">(</span><span class="s2">&quot;\nType the number of the scenario you want to run: &quot;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">loadSelected</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">scenarios</span><span class="p">,</span> <span class="nx">rl</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">));</span>
-
-      <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">;</span>
-    <span class="p">},</span>
-
-    <span class="nx">autoCompleter</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">names</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="p">[</span>
-        <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">names</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
-          <span class="k">return</span> <span class="nx">name</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">token</span><span class="p">)</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span>
-        <span class="p">}),</span>
-        <span class="nx">token</span>
-      <span class="p">];</span>
-    <span class="p">},</span>
-
-    <span class="nx">loadSelected</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="nx">rl</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">,</span> <span class="nx">choice</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">rl</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
-
-
-</pre></div>
-        </td>
-      </tr>
-      <tr>
-        <td class="docs">
-<div class="pilwrap">
-  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
-</div>
-<p>TODO: check if _.bind is required for deferred objects</p>
-        </td>
-        <td class="code highlight"><div class="highlight"><pre>
-      <span class="nx">q</span><span class="p">.</span><span class="nx">fcall</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">validateAndLoad</span><span class="p">,</span> <span class="nx">scenarios</span><span class="p">,</span> <span class="nx">choice</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">),</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">));</span>
-    <span class="p">},</span>
-
-    <span class="nx">validateAndLoad</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="nx">choice</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">choice</span> <span class="o">=</span> <span class="p">(</span><span class="nx">choice</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">).</span><span class="nx">toString</span><span class="p">();</span>
-
-      <span class="kd">var</span> <span class="nx">scenario</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">findWhere</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="p">{</span> <span class="nx">file</span><span class="o">:</span> <span class="nx">choice</span> <span class="p">})</span> <span class="o">||</span> <span class="nx">_</span><span class="p">.</span><span class="nx">findWhere</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="nx">choice</span> <span class="p">});</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">scenario</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">loadScenario</span><span class="p">(</span><span class="nx">scenario</span><span class="p">.</span><span class="nx">file</span><span class="p">);</span>
-      <span class="p">}</span>
-
-      <span class="k">if</span> <span class="p">(</span><span class="nx">choice</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/^\d+$/</span><span class="p">))</span> <span class="p">{</span>
-
-        <span class="kd">var</span> <span class="nx">number</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">choice</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">number</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">number</span> <span class="o">&lt;=</span> <span class="nx">scenarios</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
-          <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">loadScenario</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">[</span><span class="nx">number</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="nx">file</span><span class="p">);</span>
-        <span class="p">}</span>
-      <span class="p">}</span>
-
-      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;No such scenario &quot;&#39;</span> <span class="o">+</span> <span class="nx">choice</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">);</span>
-    <span class="p">},</span>
-
-    <span class="nx">loadScenario</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">q</span><span class="p">.</span><span class="nx">fcall</span><span class="p">(</span><span class="nx">scenarioLoader</span><span class="p">,</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">file</span><span class="p">)).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">scenario</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">scenario</span><span class="p">,</span> <span class="p">{</span> <span class="nx">file</span><span class="o">:</span> <span class="nx">file</span> <span class="p">});</span>
-      <span class="p">});</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">scenarios</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">printListing</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">q</span><span class="p">();</span>
     <span class="p">}</span>
-  <span class="p">});</span>
 
-  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="nx">choice</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">q</span><span class="p">.</span><span class="nx">fcall</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="k">new</span> <span class="nx">ScenarioSelector</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="nx">options</span><span class="p">).</span><span class="nx">select</span><span class="p">(</span><span class="nx">choice</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">scenarios</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">choice</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">loadScenario</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">file</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">choice</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">q</span><span class="p">.</span><span class="nx">fcall</span><span class="p">(</span><span class="nx">validateAndLoad</span><span class="p">,</span> <span class="nx">scenarios</span><span class="p">,</span> <span class="nx">choice</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="nx">printListing</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+
+    <span class="kd">var</span> <span class="nx">names</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">);</span>
+
+    <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">defer</span><span class="p">(),</span>
+        <span class="nx">rl</span> <span class="o">=</span> <span class="nx">readline</span><span class="p">.</span><span class="nx">createInterface</span><span class="p">({</span>
+          <span class="nx">input</span><span class="o">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">stdin</span><span class="p">,</span>
+          <span class="nx">output</span><span class="o">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">,</span>
+          <span class="nx">completer</span><span class="o">:</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">autoCompleter</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">names</span><span class="p">)</span>
+        <span class="p">});</span>
+
+    <span class="nx">rl</span><span class="p">.</span><span class="nx">question</span><span class="p">(</span><span class="s2">&quot;\nType the number of the scenario you want to run: &quot;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">loadSelected</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">scenarios</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">rl</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">));</span>
+
+    <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">loadSelected</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">rl</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">,</span> <span class="nx">answer</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">rl</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+    <span class="nx">q</span><span class="p">.</span><span class="nx">fcall</span><span class="p">(</span><span class="nx">validateAndLoad</span><span class="p">,</span> <span class="nx">scenarios</span><span class="p">,</span> <span class="nx">answer</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="kc">false</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">validateAndLoad</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="nx">choice</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">displayListingOnError</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">choice</span> <span class="o">=</span> <span class="p">(</span><span class="nx">choice</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">).</span><span class="nx">toString</span><span class="p">();</span>
+
+    <span class="kd">var</span> <span class="nx">scenario</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">findWhere</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="p">{</span> <span class="nx">file</span><span class="o">:</span> <span class="nx">choice</span> <span class="p">})</span> <span class="o">||</span> <span class="nx">_</span><span class="p">.</span><span class="nx">findWhere</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="nx">choice</span> <span class="p">});</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">scenario</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">loadScenario</span><span class="p">(</span><span class="nx">scenario</span><span class="p">.</span><span class="nx">file</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">choice</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/^\d+$/</span><span class="p">))</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">number</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">choice</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">number</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">number</span> <span class="o">&lt;=</span> <span class="nx">scenarios</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">loadScenario</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">[</span><span class="nx">number</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="nx">file</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">displayListingOnError</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">printListing</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;No such scenario &quot;&#39;</span> <span class="o">+</span> <span class="nx">choice</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">loadScenario</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">q</span><span class="p">.</span><span class="nx">fcall</span><span class="p">(</span><span class="nx">scenarioLoader</span><span class="p">,</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">file</span><span class="p">)).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">scenario</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">scenario</span><span class="p">,</span> <span class="p">{</span> <span class="nx">file</span><span class="o">:</span> <span class="nx">file</span> <span class="p">});</span>
     <span class="p">});</span>
-  <span class="p">};</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">autoCompleter</span><span class="p">(</span><span class="nx">names</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">[</span>
+      <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">names</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">name</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">token</span><span class="p">)</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="p">}),</span>
+      <span class="nx">token</span>
+    <span class="p">];</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">printListing</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">var</span> <span class="nx">listing</span> <span class="o">=</span> <span class="nx">scenarioListing</span><span class="p">(</span><span class="nx">scenarios</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+
+    <span class="nx">print</span><span class="p">();</span>
+    <span class="nx">print</span><span class="p">(</span><span class="nx">listing</span><span class="p">);</span>
+  <span class="p">}</span>
 <span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;@require&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;scenario.finder&#39;</span><span class="p">,</span> <span class="s1">&#39;scenario.listing&#39;</span><span class="p">,</span> <span class="s1">&#39;scenario.loader&#39;</span><span class="p">,</span> <span class="s1">&#39;readline&#39;</span><span class="p">,</span> <span class="s1">&#39;cli.print&#39;</span> <span class="p">];</span>
 </pre></div>
         </td>
       </tr>

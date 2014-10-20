@@ -125,37 +125,24 @@ The following events can be emitted:</p>
 </div>
 
 
-<p>This module exports a function the can be used to inject mock dependencies.
-Call the function with no arguments to get the Client class with its real dependencies:</p>
+<p>This module exports a factory function the can be used to inject mock dependencies.</p>
 
-
-<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">clientInjector</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./client&#39;</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">Client</span> <span class="o">=</span> <span class="nx">clientInjector</span><span class="p">();</span>
-</code></pre></div>
-
-
-
-<p>To inject mock dependencies, pass an object with mocks:</p>
-
-
-<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">Client</span> <span class="o">=</span> <span class="nx">clientInjector</span><span class="p">({</span>
-  <span class="nx">request</span><span class="o">:</span> <span class="nx">requestMock</span>
-<span class="p">});</span>
-</code></pre></div>
-
-
-
-<p>The following dependencies can be mocked:</p>
+<p>The following dependencies can be passed to the function in order:</p>
 
 <ul>
 <li><code>request</code> - the request library.</li>
 </ul>
+
+<p>For example:</p>
+
+
+<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">Client</span> <span class="o">=</span> <span class="nx">clientFactory</span><span class="p">(</span><span class="nx">requestMock</span><span class="p">);</span>
+</code></pre></div>
+
+
         </td>
         <td class="code highlight"><div class="highlight"><pre>
-<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">deps</span><span class="p">)</span> <span class="p">{</span>
-
-  <span class="nx">deps</span> <span class="o">=</span> <span class="nx">deps</span> <span class="o">||</span> <span class="p">{};</span>
-  <span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">request</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">);</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">request</span><span class="p">)</span> <span class="p">{</span>
 
 
 </pre></div>
@@ -536,6 +523,9 @@ Again, any error is caught by the promise chain and causes the returned promise 
 
   <span class="k">return</span> <span class="nx">Client</span><span class="p">;</span>
 <span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;@singleton&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;@require&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;request&#39;</span> <span class="p">];</span>
 </pre></div>
         </td>
       </tr>

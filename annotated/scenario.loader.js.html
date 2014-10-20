@@ -37,16 +37,21 @@
 </div>
 
         </td>
-        <td class="code highlight"><div class="highlight"><pre><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span> <span class="p">{</span>
+        <td class="code highlight"><div class="highlight"><pre><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">Scenario</span><span class="p">)</span> <span class="p">{</span>
 
-  <span class="kd">var</span> <span class="nx">scenario</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span>
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span> <span class="p">{</span>
 
-  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">scenario</span> <span class="k">instanceof</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./index&#39;</span><span class="p">).</span><span class="nx">Scenario</span><span class="p">))</span> <span class="p">{</span>
-    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="nx">file</span> <span class="o">+</span> <span class="s1">&#39; does not export a valid API scenario&#39;</span><span class="p">);</span>
-  <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">scenario</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span>
 
-  <span class="k">return</span> <span class="nx">scenario</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">scenario</span> <span class="k">instanceof</span> <span class="nx">Scenario</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="nx">file</span> <span class="o">+</span> <span class="s1">&#39; does not export a valid API scenario&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">scenario</span><span class="p">;</span>
+  <span class="p">};</span>
 <span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;@require&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;scenario&#39;</span> <span class="p">];</span>
 </pre></div>
         </td>
       </tr>
